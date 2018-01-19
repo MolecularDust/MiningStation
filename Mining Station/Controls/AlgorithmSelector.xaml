@@ -1,0 +1,309 @@
+﻿<Window
+    x:Class="Mining_Station.AlgorithmSelector"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="AlgorithmsWindow"
+    Title="Algorithms"
+    Height="410"
+    ContentRendered="Window_ContentRendered"
+    Closed="AlgorithmsWindow_Closed"
+    WindowStartupLocation="CenterOwner"
+    SizeToContent="Width"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <local:OptionConverter x:Key="OptionConverter" />
+        <Style x:Key="HideItem" TargetType="ListBoxItem">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Show}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Style.Resources>
+                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                            <SolidColorBrush x:Key="{x:Static Member=SystemColors.InactiveSelectionHighlightBrushKey}" Color="{DynamicResource ResourceKey={x:Static Member=SystemColors.HighlightColorKey}}" />
+                        </Style.Resources>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+        <Border
+            Grid.Row="0"
+            Background="{StaticResource SingleCell}"
+            BorderThickness="0">
+            <TextBlock
+                x:Name="HeaderText"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold"
+                Text="Add Coins By Algorithm" />
+        </Border>
+        <Border
+            Grid.Row="1"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0.75,0,0.75">
+            <Border.Resources>
+                <DataTemplate x:Key="LoadingTemplate">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <local:ucSpinnerApple
+                                Margin="10"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Foreground="Black" />
+                            <TextBlock Text="Accessing whattomine.com..." />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="FailTemplate">
+                    <Grid>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="No access to whattomine.com." />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+                <DataTemplate x:Key="WorkingTemplate">
+                    <Grid DataContext="{Binding ElementName=AlgorithmsWindow, Path=DataContext}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            BorderBrush="{StaticResource ButtonStroke}"
+                            BorderThickness="0,0,1,1">
+                            <TextBlock
+                                Margin="4"
+                                HorizontalAlignment="Center"
+                                Text="Algorithms" />
+                        </Border>
+                        <ListBox
+                            x:Name="ListBoxAlgorithms"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Padding="0,5"
+                            BorderThickness="0"
+                            ItemsSource="{Binding Algorithms}"
+                            ScrollViewer.VerticalScrollBarVisibility="Visible"
+                            ItemContainerStyle="{StaticResource HideItem}"
+                            SelectedIndex="0"
+                            Tag="{Binding ElementName=AlgorithmsWindow, Path=DataContext}">
+                            <ListBox.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem Command="{Binding AlgorithmsSelectAll}" Header="Select All" />
+                                    <MenuItem Command="{Binding AlgorithmsSelectNone}" Header="Select None" />
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox
+                                            Margin="5,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Click="CheckBox_Click"
+                                            IsChecked="{Binding IsChecked}" />
+                                        <TextBlock
+                                            Margin="5,0,5,0"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Name}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <Border
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            BorderBrush="{StaticResource ButtonStroke}"
+                            BorderThickness="0,0,0,1">
+                            <TextBlock
+                                Margin="4"
+                                HorizontalAlignment="Center"
+                                Text="Coins" />
+                        </Border>
+                        <ListBox
+                            x:Name="ListBoxCoins"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Padding="0,5"
+                            BorderThickness="0"
+                            ItemsSource="{Binding ElementName=ListBoxAlgorithms, Path=SelectedItem.Coins}"
+                            ItemContainerStyle="{StaticResource HideItem}"
+                            Tag="{Binding ElementName=AlgorithmsWindow, Path=DataContext}">
+                            <ListBox.ContextMenu>
+                                <ContextMenu DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                    <MenuItem
+                                        Command="{Binding CoinsSelectAll}"
+                                        CommandParameter="{Binding PlacementTarget.ItemsSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                        Header="Select All" />
+                                    <MenuItem
+                                        Command="{Binding CoinsSelectNone}"
+                                        CommandParameter="{Binding PlacementTarget.ItemsSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}"
+                                        Header="Select None" />
+                                    <MenuItem Header="Display Coin As">
+                                        <MenuItem Header="Name" IsCheckable="True" />
+                                        <MenuItem Header="SYMBOL" IsCheckable="True" />
+                                        <MenuItem Header="Name (SYMBOL)" IsCheckable="True" />
+                                        <i:Interaction.Behaviors>
+                                            <local:DisplayCoinAsMenuBehavior Option="{Binding DisplayCoinAs, Mode=TwoWay}" />
+                                        </i:Interaction.Behaviors>
+                                    </MenuItem>
+                                </ContextMenu>
+                            </ListBox.ContextMenu>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox
+                                            Margin="5,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Click="CheckBox_Click"
+                                            IsChecked="{Binding IsChecked}" />
+                                        <TextBlock Margin="5,0,5,0" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding ElementName=ListBoxAlgorithms, Path=DataContext.DisplayCoinAs}" Value="Name">
+                                                            <Setter Property="Text" Value="{Binding Name}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=ListBoxAlgorithms, Path=DataContext.DisplayCoinAs}" Value="SYMBOL">
+                                                            <Setter Property="Text" Value="{Binding Symbol}" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding ElementName=ListBoxAlgorithms, Path=DataContext.DisplayCoinAs}" Value="Name (SYMBOL)">
+                                                            <Setter Property="Text">
+                                                                <Setter.Value>
+                                                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                                                        <Binding Path="Name" />
+                                                                        <Binding Path="Symbol" />
+                                                                    </MultiBinding>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Status, Converter={StaticResource CoinStatusConverter}}" Value="False">
+                                                            <Setter Property="Foreground" Value="Gray"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </Grid>
+                </DataTemplate>
+            </Border.Resources>
+            <ContentControl>
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate" Value="{StaticResource WorkingTemplate}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=AlgorithmsWindow, Path=DataContext.IsInitializing, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource LoadingTemplate}" />
+                            </DataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ElementName=AlgorithmsWindow, Path=DataContext.IsInitializing, UpdateSourceTrigger=PropertyChanged}" Value="False" />
+                                    <Condition Binding="{Binding Algorithms}" Value="{x:Null}"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="ContentTemplate" Value="{StaticResource FailTemplate}" />
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </Border>
+        <Grid Grid.Row="2" Margin="40,20,40,20">
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0.087,1.87">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Row="0" Grid.ColumnSpan="2" Content="Show active coins only" IsChecked="{Binding ShowActiveCoinsOnly}"/>
+                <StackPanel
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2"
+                    Orientation="Horizontal">
+                    <RadioButton
+                        VerticalAlignment="Center"
+                        Content="Add to existing worker:"
+                        GroupName="Choice"
+                        IsChecked="{Binding Path=Option, Converter={StaticResource OptionConverter}, ConverterParameter=AddToExisting}" />
+                    <ComboBox
+                        Margin="5,0,0,0"
+                        VerticalAlignment="Center"
+                        ItemsSource="{Binding Workers}"
+                        SelectedItem="{Binding SelectedWorker}" />
+                </StackPanel>
+                <RadioButton
+                    Grid.Row="2"
+                    Grid.ColumnSpan="2"
+                    Content="Create new worker"
+                    GroupName="Choice"
+                    IsChecked="{Binding Path=Option, Converter={StaticResource OptionConverter}, ConverterParameter=AddToNew}" />
+                <TextBlock
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    Margin="0,5,5,0"
+                    VerticalAlignment="Center"
+                    Text="Hashrate:" />
+                <TextBox
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    Margin="0,5,0,0"
+                    VerticalAlignment="Center"
+                    Text="{Binding Hashrate, Mode=TwoWay}" />
+            </Grid>
+        </Grid>
+        <Border
+            Grid.Row="3"
+            Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0.75,0,0">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    x:Name="ButtonOk"
+                    Width="70"
+                    Height="25"
+                    Margin="0,0,10,0"
+                    Click="ButtonOk_Click"
+                    Command="{Binding Process}"
+                    Content="Add"
+                    IsDefault="True" />
+                <Button
+                    x:Name="ButtonCancel"
+                    Width="70"
+                    Height="25"
+                    Margin="0,0,10,0"
+                    Click="ButtonCancel_Click"
+                    Content="Cancel"
+                    IsDefault="True" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

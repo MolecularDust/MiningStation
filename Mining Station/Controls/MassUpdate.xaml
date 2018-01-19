@@ -1,0 +1,344 @@
+﻿<Window
+    x:Class="Mining_Station.MassUpdate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    x:Name="TheMassUpdateWindow"
+    Title="{Binding WindowTitle}"
+    Height="400"
+    ContentRendered="TheMassUpdateWindow_ContentRendered"
+    SizeToContent="Width"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <local:DateConverter x:Key="DateConverter" />
+        <Style x:Key="CheckMarkPath" TargetType="{x:Type Path}">
+            <Setter Property="Stretch" Value="Fill" />
+            <Setter Property="Width" Value="37.9998" />
+            <Setter Property="Height" Value="31.6665" />
+            <Setter Property="Data" Value="F1 M 23.7501,33.25L 34.8334,44.3333L 52.2499,22.1668L 56.9999,26.9168L 34.8334,53.8333L 19.0001,38L 23.7501,33.25 Z " />
+        </Style>
+        <Thickness x:Key="CellThickness">5,0</Thickness>
+        <sys:Double x:Key="RowHeight">20</sys:Double>
+        <SolidColorBrush x:Key="InnerBorderColor" Color="Transparent" />
+        <Thickness x:Key="InnerBorderThickness">1</Thickness>
+    </Window.Resources>
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+        <Border
+            Grid.Row="0"
+            Background="{StaticResource SingleCell}"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0,0,0.75">
+            <StackPanel Margin="0,10">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Text="{Binding Header}" />
+                <TextBlock HorizontalAlignment="Center" Text="{Binding SubHeader}" />
+            </StackPanel>
+
+        </Border>
+        <ScrollViewer Grid.Row="1">
+            <DataGrid
+                x:Name="DataGridJobs"
+                AutoGenerateColumns="False"
+                Background="White"
+                BorderThickness="0"
+                CanUserAddRows="False"
+                CellStyle="{StaticResource DatagridCellNoSelection}"
+                ColumnHeaderStyle="{StaticResource DataGridHeaderCenter}"
+                GridLinesVisibility="None"
+                HeadersVisibility="Column"
+                ItemsSource="{Binding Computers}"
+                Tag="{Binding ElementName=TheMassUpdateWindow, Path=DataContext}"
+                UseLayoutRounding="True">
+                <DataGrid.ContextMenu>
+                    <ContextMenu x:Name="MassUpdateContextMenu">
+                        <MenuItem Command="{Binding PlacementTarget.Tag.UpdateAll, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Header="Update All" />
+                        <MenuItem Command="{Binding PlacementTarget.Tag.UpdateNone, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Header="Update None" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Resources>
+                    <DataTemplate x:Key="SearchingTemplate">
+                        <Viewbox Width="14">
+                            <local:ucSpinnerApple />
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="CheckMarkTemplate">
+                        <Viewbox Height="10">
+                            <Path
+                                Data="F1 M 23.7501,33.25L 34.8334,44.3333L 52.2499,22.1668L 56.9999,26.9168L 34.8334,53.8333L 19.0001,38L 23.7501,33.25 Z "
+                                Fill="{Binding Source={StaticResource SuccessGreen}}"
+                                Stretch="Fill" />
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="CrossMarkTemplate">
+                        <Viewbox Width="17">
+                            <Path
+                                Data="F1 M 35,19L 41,19L 41,35L 57,35L 57,41L 41,41L 41,57L 35,57L 35,41L 19,41L 19,35L 35,35L 35,19 Z "
+                                Fill="{Binding Source={StaticResource FailureRed}}"
+                                Stretch="Fill">
+                                <Path.LayoutTransform>
+                                    <RotateTransform Angle="45" />
+                                </Path.LayoutTransform>
+                            </Path>
+                        </Viewbox>
+                    </DataTemplate>
+                    <DataTemplate x:Key="RestartPendingTemplate">
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{StaticResource FailureRed}"
+                            Text="PENDING" />
+                    </DataTemplate>
+                    <DataTemplate x:Key="VersionTemplate">
+                        <Border
+                            Height="{StaticResource RowHeight}"
+                            BorderBrush="{StaticResource InnerBorderColor}"
+                            BorderThickness="{StaticResource InnerBorderThickness}"
+                            DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=DataContext}">
+                            <TextBlock
+                                Margin="{StaticResource CellThickness}"
+                                VerticalAlignment="Center"
+                                Text="{Binding Version}" />
+                        </Border>
+                    </DataTemplate>
+                    <DataTemplate x:Key="WorkersTemplate">
+                        <Border
+                            Height="{StaticResource RowHeight}"
+                            BorderBrush="{StaticResource InnerBorderColor}"
+                            BorderThickness="{StaticResource InnerBorderThickness}"
+                            DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=DataContext}">
+                            <TextBlock
+                                Margin="{StaticResource CellThickness}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource DateConverter}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding Path="WorkersDate" />
+                                        <Binding Path="OnlineStatus" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Border>
+                    </DataTemplate>
+                    <DataTemplate x:Key="SettingsTemplate">
+                        <Border
+                            Height="{StaticResource RowHeight}"
+                            BorderBrush="{StaticResource InnerBorderColor}"
+                            BorderThickness="{StaticResource InnerBorderThickness}"
+                            DataContext="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGridRow}, Path=DataContext}">
+                            <TextBlock
+                                Margin="{StaticResource CellThickness}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding Converter="{StaticResource DateConverter}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding Path="WtmSettingsDate" />
+                                        <Binding Path="OnlineStatus" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </Border>
+                    </DataTemplate>
+                    <Style TargetType="DataGridRow">
+                        <Setter Property="BorderThickness" Value="0,1,0,0" />
+                        <Setter Property="BorderBrush" Value="{StaticResource ButtonStroke}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                <Setter Property="BorderThickness" Value="0" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding UpdateStatus, UpdateSourceTrigger=PropertyChanged}" Value="7">
+                                <Setter Property="Background" Value="{StaticResource LightRedCell}" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding UpdateStatus, UpdateSourceTrigger=PropertyChanged}" Value="8">
+                                <Setter Property="Background" Value="{StaticResource LightGreenCell}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                    <Style TargetType="CheckBox">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=TheMassUpdateWindow, Path=DataContext.SwitchIsFinished}" Value="True">
+                                <Setter Property="IsEnabled" Value="False" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Computer">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Height="{StaticResource RowHeight}"
+                                    BorderBrush="{StaticResource InnerBorderColor}"
+                                    BorderThickness="{StaticResource InnerBorderThickness}">
+                                    <TextBlock
+                                        Margin="{StaticResource CellThickness}"
+                                        VerticalAlignment="Center"
+                                        Text="{Binding Name}" />
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Online">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ContentControl Style="{StaticResource OnlineStatusSwitch}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding DataContext.ColumnHeader, ElementName=TheMassUpdateWindow}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.HeaderTemplate>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ContentControl>
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=DataContext.ColumnHeader, ElementName=TheMassUpdateWindow}" Value="Version">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource VersionTemplate}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=DataContext.ColumnHeader, ElementName=TheMassUpdateWindow}" Value="Workers Date">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource WorkersTemplate}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=DataContext.ColumnHeader, ElementName=TheMassUpdateWindow}" Value="Settings Date">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource SettingsTemplate}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Update" SortMemberPath="">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border
+                                    Height="{StaticResource RowHeight}"
+                                    BorderBrush="{StaticResource InnerBorderColor}"
+                                    BorderThickness="{StaticResource InnerBorderThickness}">
+                                    <ContentControl Margin="{StaticResource CellThickness}">
+                                        <CheckBox
+                                            Margin="2"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding Switch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                            <CheckBox.Style>
+                                                <Style TargetType="CheckBox">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding SwitchStatus}" Value="5">
+                                                            <Setter Property="IsEnabled" Value="True" />
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding SwitchStatus}" Value="6">
+                                                            <Setter Property="IsEnabled" Value="False" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </CheckBox.Style>
+                                        </CheckBox>
+                                        <ContentControl.Style>
+                                            <Style TargetType="ContentControl">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SwitchStatus}" Value="1">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource SearchingTemplate}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SwitchStatus}" Value="2">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource CheckMarkTemplate}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding SwitchStatus}" Value="3">
+                                                        <Setter Property="ContentTemplate" Value="{StaticResource CrossMarkTemplate}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ContentControl.Style>
+                                    </ContentControl>
+                                </Border>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </ScrollViewer>
+        <Border
+            Grid.Row="2"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,1,0,0">
+            <TextBlock
+                Margin="5"
+                HorizontalAlignment="Center"
+                Text="{Binding ReportTitle}" />
+        </Border>
+
+        <ScrollViewer Grid.Row="3">
+            <RichTextBox x:Name="ReportBox" Width="{Binding ElementName=DataGridJobs, Path=ActualWidth}">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0" />
+                    </Style>
+                </RichTextBox.Resources>
+                <i:Interaction.Behaviors>
+                    <local:RichTextBoxAddLineBehavior AddParagraph="{Binding NewParagraph}" />
+                    <local:RichTextBoxAddLineBehavior AddRun="{Binding NewRun}" />
+                </i:Interaction.Behaviors>
+            </RichTextBox>
+        </ScrollViewer>
+        <Border
+            Grid.Row="4"
+            Grid.ColumnSpan="2"
+            Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0.75,0,0">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    x:Name="ButtonStart"
+                    Width="70"
+                    Height="25"
+                    Margin="0,0,10,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Content" Value="Update" />
+                            <Setter Property="Command" Value="{Binding Update}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ScanIsInProgress}" Value="True">
+                                    <Setter Property="Content" Value="Stop" />
+                                    <Setter Property="Command" Value="{Binding Stop}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding UpdateIsInProgress}" Value="True">
+                                    <Setter Property="Content" Value="Stop" />
+                                    <Setter Property="Command" Value="{Binding Stop}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding UpdateIsFinished}" Value="True">
+                                    <Setter Property="Content" Value="OK" />
+                                    <Setter Property="Command" Value="{Binding Quit}" />
+                                    <Setter Property="CommandParameter" Value="{Binding ElementName=TheMassUpdateWindow}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                <Button
+                    x:Name="ButtonCancel"
+                    Width="70"
+                    Height="25"
+                    Click="ButtonCancel_Click"
+                    Content="Cancel"
+                    IsCancel="True" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

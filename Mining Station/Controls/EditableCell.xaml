@@ -1,0 +1,53 @@
+﻿<UserControl
+    x:Class="Mining_Station.EditableCell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="MainControl"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    Background="Transparent"
+    GotFocus="MainControl_GotFocus"
+    Loaded="MainControl_Loaded"
+    LostFocus="MainControl_LostFocus"
+    LostMouseCapture="MainControl_LostMouseCapture"
+    PreviewMouseLeftButtonDown="MainControl_PreviewMouseLeftButtonDown"
+    Unloaded="MainControl_Unloaded"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="DisplayTemplate">
+            <TextBlock
+                x:Name="MainTextBlock"
+                Margin="{Binding ElementName=MainControl, Path=MarginInner}"
+                HorizontalAlignment="{Binding ElementName=MainControl, Path=HorizontalAlignmentInner}"
+                VerticalAlignment="{Binding ElementName=MainControl, Path=VerticalAlignmentInner}"
+                Background="Transparent"
+                Loaded="MainTextBlock_Loaded"
+                Text="{Binding ElementName=MainControl, Path=Text}" />
+        </DataTemplate>
+
+        <DataTemplate x:Key="EditTemplate">
+            <TextBox
+                x:Name="MainTextBox"
+                BorderThickness="0"
+                Loaded="MainTextBox_Loaded"
+                LostFocus="MainTextBox_LostFocus"
+                PreviewKeyDown="MainTextBox_PreviewKeyDown"
+                Text="{Binding ElementName=MainControl, Path=TextBuffer}" />
+        </DataTemplate>
+
+        <Style TargetType="{x:Type local:EditableCell}">
+            <Setter Property="ContentTemplate" Value="{StaticResource DisplayTemplate}" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=MainControl, Path=IsEditing}" Value="True">
+                    <Setter Property="ContentTemplate" Value="{StaticResource EditTemplate}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </UserControl.Resources>
+
+</UserControl>

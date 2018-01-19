@@ -1,0 +1,115 @@
+﻿<Window x:Class="Mining_Station.EditKillListDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Mining_Station"
+        mc:Ignorable="d" 
+        WindowStartupLocation="CenterScreen"
+        x:Name="KillListWindow"
+        Title="Kill List" Height="295" Width="350">
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=CopyAll}"
+                    Key="C" Modifiers="Ctrl+Shift"/>
+        <KeyBinding Command="{Binding Path=PasteAsNewRow}"
+                    Key="V" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=PasteAcrossRows}"
+                    Key="V" Modifiers="Ctrl+Shift"/>
+    </Window.InputBindings>
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="{StaticResource SingleCell}">
+            <Border BorderBrush="{StaticResource ButtonStroke}" BorderThickness="0,0,0,0.75">
+                <TextBlock  Text="List of processes to kill while switching" FontWeight="SemiBold"
+                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Border>
+        </Grid>
+        <ScrollViewer Grid.Row="1">
+            <ContentControl >
+                <ContentControl.Resources>
+                    <DataTemplate x:Key="WorkingTemplate">
+                        <DataGrid  DataContext="{Binding ElementName=KillListWindow, Path=DataContext}"
+                                   ItemsSource="{Binding KillList}"
+                                   GridLinesVisibility="None"
+                                   HeadersVisibility="None"
+                                   CanUserAddRows="True"
+                                   BorderThickness="0,0,0.75,0"
+                                   AutoGenerateColumns="False">
+                            <DataGrid.ContextMenu>
+                                <ContextMenu x:Name="ProfitTableContextMenu" DataContext="{Binding PlacementTarget, RelativeSource={RelativeSource Self}}" >
+                                    <MenuItem Header="Copy All (Ctrl+Shift-C)"
+                                              Command="{Binding DataContext.CopyAll}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Clear"
+                                              Command="{Binding DataContext.Clear}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Extract raw lines from Workers"
+                                              Command="{Binding DataContext.ExtractRawLinesFromWorkers}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Insert empty row"
+                                              Command="{Binding DataContext.InsertRow}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Paste across rows (Ctrl+Shift-V)"
+                                              Command="{Binding DataContext.PasteAcrossRows}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Paste as new row (Ctrl-V)"
+                                              Command="{Binding DataContext.PasteAsNewRow}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                    <MenuItem Header="Remove"
+                                              Command="{Binding DataContext.RemoveRow}"
+                                              CommandParameter="{Binding Path=SelectedItem}"/>
+                                </ContextMenu>
+                            </DataGrid.ContextMenu>
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Style.Resources>
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="LightBlue" Opacity="0.25" />
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
+                                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                    </Style.Resources>
+                                    <Setter Property="Background" Value="{StaticResource SingleCell}"/>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell" BasedOn="{StaticResource ThinCell}">
+                                    <Setter Property="BorderThickness" Value="0,0,0,0.25"/>
+                                </Style>
+                            </DataGrid.CellStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding Process}" Width="*" ElementStyle="{StaticResource ColumnElementStyle}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DataTemplate>
+                    <DataTemplate x:Key="BusyTemplate">
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <local:ucSpinnerApple Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Black"/>
+                            <TextBlock Text="Parsing Workers..." />
+                        </StackPanel>
+                    </DataTemplate>
+                </ContentControl.Resources>
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Setter Property="ContentTemplate" Value="{StaticResource WorkingTemplate}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsBusy}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource BusyTemplate}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </ScrollViewer>
+        <Border Grid.Row="2"  Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" BorderBrush="{StaticResource ButtonStroke}" BorderThickness="0,0.75,0,0" >
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="ButtonExtract" Content="Extract From Workers" Height="25" Width="141" Margin="0,0,10,0" Command="{Binding ExtractFromWorkers}" />
+                <Button x:Name="ButtonSubmit" Content="Submit" Height="25" Width="70" Margin="0,0,10,0" Click="ButtonSubmit_Click" />
+                <Button x:Name="ButtonCancel" Content="Cancel" Height="25" Width="70" Click="ButtonCancel_Click" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,1270 @@
+﻿
+<Window
+    x:Class="Mining_Station.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behavior="clr-namespace:Mining_Station"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    x:Name="TheMainWindow"
+    Title="Mining Station"
+    Width="825"
+    Height="650"
+    Closed="TheMainWindow_Closed"
+    TextOptions.TextFormattingMode="Display"
+    mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="ContentRendered">
+            <i:InvokeCommandAction Command="{Binding Initialize}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Window.InputBindings>
+        <KeyBinding
+            Key="Z"
+            Command="{Binding Path=Undo}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="Y"
+            Command="{Binding Path=Redo}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="S"
+            Command="{Binding Path=Save}"
+            Modifiers="Control" />
+    </Window.InputBindings>
+    <Window.Resources>
+        <Style x:Key="TextBoxNoUndo" TargetType="TextBox">
+            <Setter Property="UndoLimit" Value="0" />
+        </Style>
+        <BorderGapMaskConverter x:Key="BorderGapMaskConverter" />
+        <Style TargetType="{x:Type GroupBox}">
+            <Setter Property="BorderBrush" Value="Gray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type GroupBox}">
+                        <Grid SnapsToDevicePixels="true" UseLayoutRounding="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="6" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="6" />
+                            </Grid.RowDefinitions>
+                            <Border
+                                Grid.Row="1"
+                                Grid.RowSpan="3"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="4"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="Transparent"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="4" />
+                            <Border
+                                Name="Header"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Grid.Column="1"
+                                Padding="3,1,3,0">
+                                <ContentPresenter
+                                    ContentSource="Header"
+                                    RecognizesAccessKey="true"
+                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            </Border>
+                            <ContentPresenter
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Grid.ColumnSpan="2"
+                                Margin="{TemplateBinding Padding}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <Border
+                                Grid.Row="1"
+                                Grid.RowSpan="3"
+                                Grid.ColumnSpan="4"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="3">
+                                <Border.OpacityMask>
+                                    <MultiBinding Converter="{StaticResource BorderGapMaskConverter}" ConverterParameter="7">
+                                        <Binding ElementName="Header" Path="ActualWidth" />
+                                        <Binding Path="ActualWidth" RelativeSource="{RelativeSource Self}" />
+                                        <Binding Path="ActualHeight" RelativeSource="{RelativeSource Self}" />
+                                    </MultiBinding>
+                                </Border.OpacityMask>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="VerticallyCenteredCell" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="5,0,5,0" />
+        </Style>
+        <Style x:Key="Margin5" TargetType="{x:Type FrameworkElement}">
+            <Setter Property="Margin" Value="15,0,15,0" />
+        </Style>
+        <Style x:Key="ButtonDisabled" TargetType="Button">
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <StatusBar DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusBarText}" />
+            </StatusBarItem>
+        </StatusBar>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ToolBar Grid.Row="0" FocusManager.IsFocusScope="False">
+                <Menu VerticalContentAlignment="Stretch" Background="Transparent">
+                    <MenuItem
+                        Width="20"
+                        Height="20"
+                        Padding="4.5,0,0,0">
+                        <MenuItem.Header>
+                            <Viewbox Width="10" Height="10">
+                                <Path Stroke="#FF4E4E4E" StrokeThickness="5">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M 0,2 H 25 M 0,12 H 25 M 0,22 H 25" />
+                                    </Path.Data>
+                                </Path>
+                            </Viewbox>
+                        </MenuItem.Header>
+                        <MenuItem Header="Mass Update">
+                            <MenuItem Command="{Binding MassUpdateApplication}" Header="Update Mining Station" />
+                            <MenuItem Command="{Binding MassUpdateWorkers}" Header="Update Workers" />
+                            <MenuItem Command="{Binding MassUpdateWtmSettings}" Header="Update Settings" />
+                        </MenuItem>
+                        <MenuItem Command="{Binding AddCoinsByAlgorithm}" Header="Add Coins By Algorithm" />
+                        <MenuItem Command="{Binding About}" Header="About" />
+                        <MenuItem Command="{Binding Exit}" Header="Exit (Alt-F4)" />
+                    </MenuItem>
+                </Menu>
+                <Button
+                    x:Name="UndoButton"
+                    Width="20"
+                    Height="20"
+                    Command="{Binding ElementName=TheMainWindow, Path=DataContext.Undo}"
+                    IsEnabled="{Binding ElementName=TheMainWindow, Path=DataContext.History.IsUndoable}"
+                    Style="{StaticResource ButtonDisabled}"
+                    ToolTip="Undo (Ctrl-Z)">
+                    <Path
+                        Margin="2"
+                        Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z "
+                        Fill="#FF4E4E4E"
+                        Stretch="Fill" />
+                </Button>
+                <Button
+                    Width="20"
+                    Height="20"
+                    Command="{Binding ElementName=TheMainWindow, Path=DataContext.Redo}"
+                    IsEnabled="{Binding ElementName=TheMainWindow, Path=DataContext.History.IsRedoable}"
+                    Style="{StaticResource ButtonDisabled}"
+                    ToolTip="Redo (Ctrl-Y)">
+                    <Path
+                        Margin="2"
+                        Data="F1 M 19.0002,34L 19.0002,42L 43.7502,42L 33.7502,52L 44.2502,52L 58.2502,38L 44.2502,24L 33.7502,24L 43.7502,34L 19.0002,34 Z "
+                        Fill="#FF4E4E4E"
+                        Stretch="Fill" />
+                </Button>
+                <Button
+                    Width="20"
+                    Height="20"
+                    Command="{Binding ElementName=TheMainWindow, Path=DataContext.Save}"
+                    ToolTip="Save (Ctrl-S)">
+                    <Path
+                        Data="F1 M 20,20L 50.25,20L 56,25.75L 56,56L 20,56L 20,20 Z M 52,27.25L 48.75,24L 48,24L 48,37L 28,37L 28,24L 24,24L 24,52L 52,52L 52,27.25 Z M 39,24L 39,34L 44,34L 44,24L 39,24 Z "
+                        Fill="#FF4E4E4E"
+                        Stretch="Fill" />
+                </Button>
+            </ToolBar>
+            <TabControl
+                x:Name="tabControl"
+                Grid.Row="1"
+                SelectedIndex="0">
+                <TabItem x:Name="WorkersTab" Header="Workers">
+                    <ContentControl>
+                        <ContentControl.Resources>
+                            <DataTemplate x:Key="LoadingTemplate">
+                                <Grid Background="Transparent" DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}">
+                                    <Grid.ContextMenu>
+                                        <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                            <MenuItem Command="{Binding CancelWaiting}" Header="Cancel" />
+                                        </ContextMenu>
+                                    </Grid.ContextMenu>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <local:ucSpinnerApple
+                                            Margin="10"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Foreground="Black" />
+                                        <TextBlock Text="Accessing whattomine.com..." />
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate x:Key="LoadedTemplate">
+                                <Grid Background="#FFE5E5E5" DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}">
+                                    <ScrollViewer Grid.Column="0" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="45" />
+                                                <RowDefinition />
+                                            </Grid.RowDefinitions>
+                                            <Grid Grid.Row="0">
+                                                <Border BorderBrush="#FFF9F9F9" BorderThickness="0,0,0,3">
+                                                    <StackPanel Margin="0,2,0,2" Orientation="Horizontal">
+                                                        <TextBlock
+                                                            Margin="20,0,0,0"
+                                                            VerticalAlignment="Center"
+                                                            Text="Coin type filter:" />
+                                                        <ComboBox
+                                                            Height="22"
+                                                            Margin="5,0,0,0"
+                                                            ItemsSource="{Binding Workers.CoinTypes}"
+                                                            SelectedItem="{Binding Workers.CoinType}" />
+                                                        <TextBlock
+                                                            Margin="10,0,0,0"
+                                                            VerticalAlignment="Center"
+                                                            Text="Display coin as:" />
+                                                        <ComboBox
+                                                            Height="22"
+                                                            Margin="5,0,0,0"
+                                                            ItemsSource="{Binding Workers.DisplayCoinAsOptions}"
+                                                            SelectedItem="{Binding Workers.DisplayCoinAs}" />
+                                                        <TextBlock
+                                                            Margin="10,0,0,0"
+                                                            VerticalAlignment="Center"
+                                                            Text="Power cost in USD per kWh" />
+                                                        <local:NumericUpDown
+                                                            Width="70"
+                                                            Height="22"
+                                                            Margin="5"
+                                                            DynamicIncrement="True"
+                                                            FinalValue="{Binding Workers.PowerCost, Mode=TwoWay}"
+                                                            Increment="0.0001"
+                                                            Minimum="0"
+                                                            StringFormat="N4" />
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+                                            <StackPanel Grid.Row="1" Margin="15,15,15,15">
+                                                <Border BorderBrush="Violet" BorderThickness="0">
+                                                    <ItemsControl
+                                                        x:Name="ItemsControlWorkers"
+                                                        ItemsSource="{Binding Workers.WorkerList, Mode=TwoWay}"
+                                                        LayoutUpdated="ItemsControlWorkers_LayoutUpdated">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <local:WorkerTable />
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </Border>
+                                            </StackPanel>
+                                        </Grid>
+                                    </ScrollViewer>
+                                </Grid>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate" Value="{StaticResource LoadedTemplate}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.IsInitializingWtm, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                        <Setter Property="ContentTemplate" Value="{StaticResource LoadingTemplate}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>
+                    </ContentControl>
+                </TabItem>
+                <TabItem Header="WhatToMine">
+                    <Grid Background="#FFE5E5E5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="420" />
+                        </Grid.ColumnDefinitions>
+                        <ScrollViewer
+                            Grid.Column="0"
+                            PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
+                            SnapsToDevicePixels="True">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="45" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid Grid.Row="0">
+                                    <Border BorderBrush="#FFF9F9F9" BorderThickness="0,0,0,3">
+                                        <StackPanel Margin="0,2,0,2" Orientation="Horizontal">
+                                            <RadioButton
+                                                x:Name="ProfitTablesRadioButton"
+                                                Margin="15,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Content="Profit tables"
+                                                GroupName="Group1"
+                                                IsChecked="{Binding ProfitTablesEnabled}" />
+                                            <RadioButton
+                                                x:Name="HistoricalChartsRadioButton"
+                                                Margin="10,0,0,0"
+                                                VerticalAlignment="Center"
+                                                Content="Historical charts"
+                                                GroupName="Group1"
+                                                IsChecked="{Binding HistoricalChartsEnabled}" />
+                                            <Button
+                                                x:Name="StartStopScan"
+                                                Width="70"
+                                                Height="25"
+                                                Margin="10,0,0,0">
+                                                <Button.Style>
+                                                    <Style TargetType="Button">
+                                                        <Setter Property="Content" Value="Scan LAN" />
+                                                        <Setter Property="IsEnabled" Value="True" />
+                                                        <Setter Property="Command" Value="{Binding Path=ScanLan}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ScanLanIsInProgress}" Value="True">
+                                                                <Setter Property="Content" Value="Stop Scan" />
+                                                                <Setter Property="Command" Value="{Binding Path=ScanLanStop}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ProfitTables.Tables.Count}" Value="0">
+                                                                <Setter Property="IsEnabled" Value="False" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding HistoricalChartsEnabled}" Value="True">
+                                                                <Setter Property="IsEnabled" Value="False" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                <ContentControl x:Name="TableOrChartsContent" Grid.Row="1" LayoutUpdated="TableOrChartsContent_LayoutUpdated">
+                                    <ContentControl.Resources>
+                                        <DataTemplate x:Key="HistoricalChartsTemplate">
+                                            <ItemsControl
+                                                Margin="15"
+                                                VerticalAlignment="Top"
+                                                DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}"
+                                                ItemsSource="{Binding HistoricalCharts, UpdateSourceTrigger=PropertyChanged}"
+                                                VirtualizingStackPanel.IsVirtualizing="True"
+                                                VirtualizingStackPanel.VirtualizationMode="Recycling">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Grid>
+                                                            <Grid.RowDefinitions>
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                                <RowDefinition />
+                                                            </Grid.RowDefinitions>
+                                                            <Border
+                                                                x:Name="WorkerName"
+                                                                Grid.Row="0"
+                                                                Background="{Binding ThisPC, Converter={StaticResource ThisPcToColorConverter}, ConverterParameter=Border}"
+                                                                Style="{StaticResource ThinBorder1111}">
+                                                                <StackPanel Margin="5,3,5,3" Orientation="Horizontal">
+                                                                    <TextBlock VerticalAlignment="Center" Text="Worker: ">
+                                                                        <TextBlock.Inlines>
+                                                                            <Run Text="{Binding Name}" />
+                                                                        </TextBlock.Inlines>
+                                                                    </TextBlock>
+                                                                    <TextBlock>
+                                                                        <i:Interaction.Behaviors>
+                                                                            <local:TextBlockBindableInlinesBehavior BindableInlines="{Binding ThisPC, Converter={StaticResource ThisPcInfoConverter}}" />
+                                                                        </i:Interaction.Behaviors>
+                                                                    </TextBlock>
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <Border
+                                                                x:Name="Description"
+                                                                Grid.Row="1"
+                                                                Background="{Binding ThisPC, Converter={StaticResource ThisPcToColorConverter}, ConverterParameter=Border}"
+                                                                Style="{StaticResource ThinBorder1011}">
+                                                                <StackPanel Margin="5,3,5,3" Orientation="Horizontal">
+                                                                    <TextBlock Foreground="Black" Text="Description: " />
+                                                                    <TextBlock Text="{Binding Description}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <Border
+                                                                x:Name="ComputersList"
+                                                                Grid.Row="2"
+                                                                Background="{Binding ThisPC, Converter={StaticResource ThisPcToColorConverter}, ConverterParameter=Border}"
+                                                                Style="{StaticResource ThinBorder1011}">
+                                                                <StackPanel Margin="5,3,5,3" Orientation="Horizontal">
+                                                                    <TextBlock Text="Computers: " />
+                                                                    <TextBlock Text="{Binding Computers, Converter={StaticResource StringToListConverter}}" />
+                                                                </StackPanel>
+                                                            </Border>
+                                                            <Border
+                                                                x:Name="Chart"
+                                                                Grid.Row="3"
+                                                                Margin="0,0,0,20"
+                                                                Style="{StaticResource ThinBorder1011}">
+                                                                <local:Chart Height="400" DataContext="{Binding}" />
+                                                            </Border>
+                                                        </Grid>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="ZeroProfitTablesTemplate">
+                                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding ElementName=TheMainWindow, Path=DataContext.ProfitTablesTempMessage}" />
+                                            </StackPanel>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="ProfitTablesTemplate">
+                                            <local:ProfitTableControl />
+                                        </DataTemplate>
+                                    </ContentControl.Resources>
+                                    <ContentControl.Style>
+                                        <Style TargetType="ContentControl">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding HistoricalChartsEnabled, Mode=TwoWay}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource HistoricalChartsTemplate}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ProfitTablesEnabled, Mode=TwoWay}" Value="True">
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource ProfitTablesTemplate}" />
+                                                </DataTrigger>
+                                                <MultiDataTrigger>
+                                                    <MultiDataTrigger.Conditions>
+                                                        <Condition Binding="{Binding ProfitTablesEnabled, Mode=TwoWay}" Value="True" />
+                                                        <Condition Binding="{Binding ProfitTables.Tables.Count}" Value="0" />
+                                                    </MultiDataTrigger.Conditions>
+                                                    <Setter Property="ContentTemplate" Value="{StaticResource ZeroProfitTablesTemplate}" />
+                                                </MultiDataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ContentControl.Style>
+                                </ContentControl>
+                            </Grid>
+                        </ScrollViewer>
+                        <ScrollViewer
+                            Name="SettingsScroller"
+                            Grid.Row="2"
+                            Grid.Column="1"
+                            Margin="0,10,0,0">
+                            <Grid Margin="15">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Name="QueryRow" Height="Auto" />
+                                    <RowDefinition Name="ButtonsRow" Height="Auto" />
+                                    <RowDefinition Name="SettingsRow" />
+                                </Grid.RowDefinitions>
+                                <StackPanel Name="QueryTable" Grid.Row="0">
+                                    <Border Style="{StaticResource ThinBorder1111}" UseLayoutRounding="True">
+                                        <DataGrid
+                                            AutoGenerateColumns="False"
+                                            BorderThickness="0"
+                                            CanUserAddRows="false"
+                                            CellStyle="{StaticResource DataGridCellBlue}"
+                                            ColumnHeaderStyle="{StaticResource DataGridColumnHeader}"
+                                            GridLinesVisibility="None"
+                                            HeadersVisibility="Column"
+                                            ItemsSource="{Binding Workers.WorkerList}"
+                                            Tag="{Binding ElementName=TheMainWindow, Path=DataContext}"
+                                            UseLayoutRounding="False">
+                                            <DataGrid.ContextMenu>
+                                                <ContextMenu x:Name="ProfitTableContextMenu">
+                                                    <MenuItem
+                                                        Command="{Binding PlacementTarget.Tag.WorkerQueryAll, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                        CommandParameter="{Binding}"
+                                                        Header="Query All" />
+                                                    <MenuItem
+                                                        Command="{Binding PlacementTarget.Tag.WorkerQueryNone, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                        CommandParameter="{Binding}"
+                                                        Header="Query None" />
+                                                </ContextMenu>
+                                            </DataGrid.ContextMenu>
+                                            <DataGrid.Resources>
+                                                <Style TargetType="DataGridColumnHeader">
+                                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                                </Style>
+                                            </DataGrid.Resources>
+                                            <DataGrid.RowStyle>
+                                                <Style TargetType="DataGridRow">
+                                                    <Setter Property="Height" Value="20" />
+                                                    <Setter Property="Background" Value="{StaticResource SingleCell}" />
+                                                    <Style.Resources>
+                                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                                                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
+                                                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                                    </Style.Resources>
+                                                </Style>
+                                            </DataGrid.RowStyle>
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn Header="Query">
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox
+                                                                HorizontalAlignment="Center"
+                                                                VerticalAlignment="Center"
+                                                                IsChecked="{Binding Query, UpdateSourceTrigger=PropertyChanged}" />
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTextColumn
+                                                    Binding="{Binding Name}"
+                                                    ElementStyle="{StaticResource ColumnElementStyle}"
+                                                    Header="Worker"
+                                                    IsReadOnly="True" />
+                                                <DataGridTextColumn
+                                                    Binding="{Binding Description}"
+                                                    ElementStyle="{StaticResource ColumnElementStyle}"
+                                                    Header="Description"
+                                                    IsReadOnly="True" />
+                                                <DataGridTextColumn
+                                                    Width="*"
+                                                    Binding="{Binding Computers, Converter={StaticResource StringToListConverter}}"
+                                                    ElementStyle="{StaticResource ColumnElementStyle}"
+                                                    Header="Computers"
+                                                    IsReadOnly="True" />
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
+                                </StackPanel>
+                                <StackPanel Name="ButtonsSP" Grid.Row="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <Button
+                                                x:Name="CalculateProfit"
+                                                Height="30"
+                                                Margin="0,10,5,0"
+                                                Command="{Binding ElementName=TheMainWindow, Path=DataContext.CalculateProfit}"
+                                                Content="Calculate Profit" />
+                                            <Button
+                                                x:Name="Switch"
+                                                Height="30"
+                                                Margin="0,10,5,0"
+                                                Command="{Binding ElementName=TheMainWindow, Path=DataContext.SwitchManually}"
+                                                Content="Switch" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <Button
+                                                x:Name="Export"
+                                                Height="30"
+                                                Margin="5,10,0,0"
+                                                Command="{Binding ElementName=TheMainWindow, Path=DataContext.Export}"
+                                                Content="Export" />
+                                            <Button
+                                                x:Name="Test1"
+                                                Height="30"
+                                                Margin="5,10,0,0"
+                                                Command="{Binding ElementName=TheMainWindow, Path=DataContext.LoadHistoricalCharts}"
+                                                Content="Historical Charts" />
+                                            <!--<Button
+                                                x:Name="Test2"
+                                                Height="30"
+                                                Margin="5,10,0,0"
+                                                Command="{Binding ElementName=TheMainWindow, Path=DataContext.Test}"
+                                                Content="TEST" />-->
+                                        </StackPanel>
+                                    </Grid>
+
+                                </StackPanel>
+                                <StackPanel Grid.Row="2">
+                                    <StackPanel Margin="0,10,0,0">
+                                        <Expander Header="Settings" IsExpanded="True">
+                                            <StackPanel>
+                                                <StackPanel Margin="5" Orientation="Horizontal">
+                                                    <TextBlock
+                                                        Margin="0,0,10,0"
+                                                        VerticalAlignment="Center"
+                                                        Text="Display values in:" />
+                                                    <ComboBox
+                                                        DisplayMemberPath="Key"
+                                                        ItemsSource="{Binding WtmSettings.DisplayCurrencyList}"
+                                                        SelectedValue="{Binding WtmSettings.DisplayCurrency}"
+                                                        SelectedValuePath="Key">
+                                                        <ComboBox.ItemContainerStyle>
+                                                            <Style TargetType="ComboBoxItem">
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding Key}" Value="---">
+                                                                        <Setter Property="IsEnabled" Value="False" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ComboBox.ItemContainerStyle>
+                                                    </ComboBox>
+                                                    <CheckBox
+                                                        Margin="10,0,0,0"
+                                                        VerticalAlignment="Center"
+                                                        Content="Use Yahoo rates"
+                                                        IsChecked="{Binding WtmSettings.UseYahooRates}" />
+                                                </StackPanel>
+                                                <StackPanel>
+                                                    <CheckBox
+                                                        x:Name="Average24"
+                                                        Margin="5"
+                                                        Content="Average 24h prices"
+                                                        IsChecked="{Binding WtmSettings.Average24}" />
+                                                    <CheckBox
+                                                        x:Name="StartWithWindows"
+                                                        Margin="5"
+                                                        Content="Start with Windows"
+                                                        IsChecked="{Binding WtmSettings.StartWithWindows}" />
+                                                </StackPanel>
+                                                <GroupBox
+                                                    x:Name="TimeSchedule"
+                                                    Margin="0,2,0,2"
+                                                    Padding="5"
+                                                    Header="AutoSwitch">
+                                                    <StackPanel>
+                                                        <StackPanel Margin="0,5,0,10" Orientation="Horizontal">
+                                                            <CheckBox
+                                                                x:Name="AutoSwitch"
+                                                                Margin="0,0,10,0"
+                                                                Content="Enable"
+                                                                IsChecked="{Binding WtmSettings.AutoSwitch}" />
+                                                        </StackPanel>
+                                                        <StackPanel IsEnabled="{Binding WtmSettings.AutoSwitch}" Orientation="Horizontal">
+                                                            <TextBlock
+                                                                VerticalAlignment="Center"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="Switch interval" />
+                                                            <ComboBox
+                                                                Margin="5,0"
+                                                                ItemsSource="{Binding WtmSettings.SwitchPeriodList}"
+                                                                SelectedItem="{Binding WtmSettings.SwitchPeriod, Mode=TwoWay}" />
+                                                        </StackPanel>
+                                                        <DockPanel Margin="0,10" IsEnabled="{Binding WtmSettings.AutoSwitch}">
+                                                            <ContentControl>
+                                                                <ContentControl.Resources>
+                                                                    <DataTemplate x:Key="DaysTemplate">
+                                                                        <StackPanel DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}" Orientation="Horizontal">
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                Style="{StaticResource TextBlockEnable}"
+                                                                                Text="Run every" />
+                                                                            <local:NumericUpDown
+                                                                                x:Name="NumericUpDownEvery"
+                                                                                Width="40"
+                                                                                Height="19"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValue="{Binding WtmSettings.SwitchPeriodCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                Maximum="365"
+                                                                                Minimum="1" />
+                                                                            <TextBlock VerticalAlignment="Center" Style="{StaticResource TextBlockEnable}">
+                                                                                <TextBlock.Text>
+                                                                                    <MultiBinding Converter="{StaticResource DaysHoursConverter}">
+                                                                                        <Binding Path="WtmSettings.SwitchPeriod" />
+                                                                                        <Binding Path="WtmSettings.SwitchPeriodCount" />
+                                                                                    </MultiBinding>
+                                                                                </TextBlock.Text>
+                                                                            </TextBlock>
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                Style="{StaticResource TextBlockEnable}"
+                                                                                Text=" from" />
+                                                                            <local:NumericUpDownTime
+                                                                                x:Name="SwitchTimeFrom"
+                                                                                Width="55"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValueHour="{Binding WtmSettings.SwitchTimeFrom.Hour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                FinalValueMinute="{Binding WtmSettings.SwitchTimeFrom.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                                MaximumHour="23"
+                                                                                MaximumMinute="59"
+                                                                                MinimumHour="0"
+                                                                                MinimumMinute="0"
+                                                                                StringFormat="00" />
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                                Style="{StaticResource TextBlockEnable}"
+                                                                                Text="to" />
+                                                                            <local:NumericUpDownTime
+                                                                                x:Name="SwitchTimeTo"
+                                                                                Width="55"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValueHour="{Binding WtmSettings.SwitchTimeTo.Hour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                FinalValueMinute="{Binding WtmSettings.SwitchTimeTo.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                                MaximumHour="23"
+                                                                                MinimumHour="{Binding ElementName=SwitchTimeFrom, Path=ValueHour}"
+                                                                                StringFormat="00">
+                                                                                <local:NumericUpDownTime.MinimumMinute>
+                                                                                    <MultiBinding
+                                                                                        Converter="{StaticResource MinutesCheckConverter}"
+                                                                                        Mode="TwoWay"
+                                                                                        UpdateSourceTrigger="PropertyChanged">
+                                                                                        <Binding ElementName="SwitchTimeFrom" Path="ValueHour" />
+                                                                                        <Binding ElementName="SwitchTimeFrom" Path="ValueMinute" />
+                                                                                        <Binding ElementName="SwitchTimeTo" Path="ValueHour" />
+                                                                                    </MultiBinding>
+                                                                                </local:NumericUpDownTime.MinimumMinute>
+                                                                            </local:NumericUpDownTime>
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                    <DataTemplate x:Key="HourTemplate">
+                                                                        <StackPanel DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}" Orientation="Horizontal">
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                Style="{StaticResource TextBlockEnable}"
+                                                                                Text="Run every" />
+                                                                            <local:NumericUpDown
+                                                                                x:Name="NumericUpDownEvery"
+                                                                                Width="40"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValue="{Binding WtmSettings.SwitchPeriodCount, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                Maximum="365"
+                                                                                Minimum="1" />
+                                                                            <TextBlock VerticalAlignment="Center" Style="{StaticResource TextBlockEnable}">
+                                                                                <TextBlock.Text>
+                                                                                    <MultiBinding Converter="{StaticResource DaysHoursConverter}">
+                                                                                        <Binding Path="WtmSettings.SwitchPeriod" />
+                                                                                        <Binding Path="WtmSettings.SwitchPeriodCount" />
+                                                                                    </MultiBinding>
+                                                                                </TextBlock.Text>
+                                                                            </TextBlock>
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                Style="{StaticResource TextBlockEnable}"
+                                                                                Text=" from" />
+                                                                            <local:NumericUpDown
+                                                                                x:Name="FromMinute"
+                                                                                Width="40"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValue="{Binding WtmSettings.SwitchTimeFrom.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                Maximum="59"
+                                                                                Minimum="0"
+                                                                                StringFormat="00" />
+                                                                            <TextBlock
+                                                                                VerticalAlignment="Center"
+                                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                                Text="to" />
+                                                                            <local:NumericUpDown
+                                                                                x:Name="ToMinute"
+                                                                                Width="40"
+                                                                                Margin="5,0,5,0"
+                                                                                FinalValue="{Binding WtmSettings.SwitchTimeTo.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                                Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                                IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                                Maximum="59"
+                                                                                Minimum="{Binding ElementName=FromMinute, Path=Value}"
+                                                                                StringFormat="00" />
+                                                                            <TextBlock IsEnabled="{Binding WtmSettings.AutoSwitch}" Text="minutes" />
+                                                                        </StackPanel>
+                                                                    </DataTemplate>
+                                                                </ContentControl.Resources>
+                                                                <ContentControl.Style>
+                                                                    <Style TargetType="ContentControl">
+                                                                        <Setter Property="ContentTemplate" Value="{StaticResource DaysTemplate}" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding WtmSettings.SwitchPeriod, Converter={StaticResource RemoveLastSConverter}}" Value="Hour">
+                                                                                <Setter Property="ContentTemplate" Value="{StaticResource HourTemplate}" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </ContentControl.Style>
+                                                            </ContentControl>
+                                                        </DockPanel>
+                                                        <StackPanel Margin="0,0" Orientation="Horizontal">
+                                                            <TextBlock
+                                                                VerticalAlignment="Center"
+                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="Mine at least" />
+                                                            <StackPanel IsEnabled="{Binding WtmSettings.AutoSwitch}" Orientation="Horizontal">
+                                                                <local:NumericUpDown
+                                                                    x:Name="FromMinute"
+                                                                    Width="40"
+                                                                    Height="19"
+                                                                    Margin="5,0,5,0"
+                                                                    VerticalAlignment="Center"
+                                                                    FinalValue="{Binding WtmSettings.DelayNextSwitchTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                    IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                    Minimum="0"
+                                                                    StringFormat="00" />
+                                                                <TextBlock
+                                                                    VerticalAlignment="Center"
+                                                                    Style="{StaticResource TextBlockEnable}"
+                                                                    Text="hours before next switch" />
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <StackPanel>
+                                                            <CheckBox
+                                                                x:Name="UseHistoricalAverage"
+                                                                Margin="0,10,0,10"
+                                                                Content="Use historical average price"
+                                                                IsChecked="{Binding WtmSettings.UseHistoricalAverage, UpdateSourceTrigger=PropertyChanged}"
+                                                                IsEnabled="{Binding WtmSettings.AutoSwitch}" />
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <StackPanel.IsEnabled>
+                                                                    <MultiBinding Converter="{StaticResource BothAndConverter}">
+                                                                        <Binding Path="WtmSettings.AutoSwitch" />
+                                                                        <Binding Path="WtmSettings.UseHistoricalAverage" />
+                                                                    </MultiBinding>
+                                                                </StackPanel.IsEnabled>
+                                                                <TextBlock
+                                                                    VerticalAlignment="Center"
+                                                                    Style="{StaticResource TextBlockEnable}"
+                                                                    Text="Average period " />
+                                                                <local:NumericUpDown
+                                                                    Width="40"
+                                                                    Height="19"
+                                                                    Margin="5,0,0,0"
+                                                                    FinalValue="{Binding WtmSettings.HistoricalAveragePeriod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                    Foreground="{Binding SwitchTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                    IsEditing="{Binding WtmSettings.SwitchTimeEdit, Mode=TwoWay}"
+                                                                    Maximum="365"
+                                                                    Minimum="1">
+                                                                    <local:NumericUpDown.IsEnabled>
+                                                                        <MultiBinding Converter="{StaticResource PeriodEnableConverter}">
+                                                                            <Binding Path="WtmSettings.AutoSwitch" />
+                                                                            <Binding Path="WtmSettings.UseHistoricalAverage" />
+                                                                        </MultiBinding>
+                                                                    </local:NumericUpDown.IsEnabled>
+                                                                </local:NumericUpDown>
+                                                                <TextBlock
+                                                                    Margin="5,0,0,0"
+                                                                    VerticalAlignment="Center"
+                                                                    IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                                    Style="{StaticResource TextBlockEnable}"
+                                                                    Text="{Binding WtmSettings.HistoricalAveragePeriod, Converter={StaticResource IntToDaysConverter}}" />
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <!--<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                            <CheckBox
+                                                                x:Name="RestartMiner"
+                                                                Grid.Column="0"
+                                                                VerticalAlignment="Center"
+                                                                Content="Restart miner"
+                                                                IsChecked="{Binding WtmSettings.RestartMiner}">
+                                                                <CheckBox.IsEnabled>
+                                                                    <MultiBinding Converter="{StaticResource OneOfTwoConverter}">
+                                                                        <Binding Path="WtmSettings.AutoSwitch" />
+                                                                        <Binding Path="WtmSettings.RestartComputer" />
+                                                                    </MultiBinding>
+                                                                </CheckBox.IsEnabled>
+                                                            </CheckBox>
+                                                            <Button
+                                                                Grid.Column="1"
+                                                                Height="22"
+                                                                Margin="10,0"
+                                                                Padding="10,0,10,0"
+                                                                Command="{Binding EditKillList}"
+                                                                Content="Edit kill list">
+                                                                <Button.IsEnabled>
+                                                                    <MultiBinding Converter="{StaticResource KillListConverter}">
+                                                                        <Binding Path="WtmSettings.AutoSwitch" />
+                                                                        <Binding Path="WtmSettings.RestartMiner" />
+                                                                        <Binding Path="WtmSettings.RestartComputer" />
+                                                                    </MultiBinding>
+                                                                </Button.IsEnabled>
+                                                            </Button>
+                                                        </StackPanel>-->
+                                                        <CheckBox
+                                                            x:Name="RestartComputer"
+                                                            Margin="0,10,0,0"
+                                                            Content="Restart computer"
+                                                            IsChecked="{Binding WtmSettings.RestartComputer}"
+                                                            IsEnabled="{Binding WtmSettings.AutoSwitch}" />
+                                                        <StackPanel
+                                                            Margin="0,10,0,0"
+                                                            IsEnabled="{Binding WtmSettings.AutoSwitch}"
+                                                            Orientation="Horizontal">
+                                                            <TextBlock
+                                                                Margin="0,0,5,0"
+                                                                VerticalAlignment="Center"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="Switch price margin" />
+                                                            <local:NumericUpDown
+                                                                Width="60"
+                                                                Height="20"
+                                                                Margin="5,0,5,0"
+                                                                FinalValue="{Binding WtmSettings.PriceMargin, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Maximum="100"
+                                                                Minimum="0"
+                                                                StringFormat="0.00\%" />
+                                                        </StackPanel>
+                                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                            <TextBlock Text="Scheduled: " />
+                                                            <TextBlock Text="{Binding SwitchSchedule, Converter={StaticResource ScheduledTimeConverted}}" />
+                                                        </StackPanel>
+                                                        <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                            <TextBlock Text="Last run: " />
+                                                            <TextBlock Text="{Binding SwitchLastTime, Converter={StaticResource ScheduledTimeConverted}}" />
+                                                        </StackPanel>
+                                                        <Button
+                                                            Width="80"
+                                                            Height="25"
+                                                            Margin="0,10,0,1"
+                                                            HorizontalAlignment="Left"
+                                                            VerticalAlignment="Bottom"
+                                                            Command="{Binding ElementName=TheMainWindow, Path=DataContext.ApplyAutoSwitch}"
+                                                            Content="Apply"
+                                                            IsEnabled="{Binding WtmSettings.AutoSwitch}" />
+                                                        <StackPanel Orientation="Horizontal" />
+                                                    </StackPanel>
+                                                </GroupBox>
+                                                <GroupBox
+                                                    x:Name="HistorySchedule"
+                                                    Margin="0,3,0,2"
+                                                    Padding="5"
+                                                    Header="Accumulate Historical Prices">
+                                                    <StackPanel>
+                                                        <StackPanel Margin="0,5,0,10" Orientation="Horizontal">
+                                                            <CheckBox
+                                                                x:Name="HistoricalPrices"
+                                                                Margin="0,0,10,0"
+                                                                Content="Enable"
+                                                                IsChecked="{Binding WtmSettings.BackupHistoricalPrices}" />
+                                                        </StackPanel>
+                                                        <StackPanel IsEnabled="{Binding WtmSettings.BackupHistoricalPrices}" Orientation="Horizontal">
+                                                            <TextBlock
+                                                                VerticalAlignment="Center"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="Update daily from" />
+                                                            <local:NumericUpDownTime
+                                                                x:Name="HistoryFrom"
+                                                                Width="55"
+                                                                Height="19"
+                                                                Margin="5,0,5,0"
+                                                                FinalValueHour="{Binding WtmSettings.HistoryTimeFrom.Hour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                FinalValueMinute="{Binding WtmSettings.HistoryTimeFrom.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Foreground="{Binding HistoryTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                IsEditing="{Binding WtmSettings.HistoryTimeEdit, Mode=TwoWay}"
+                                                                MaximumHour="23"
+                                                                MaximumMinute="59"
+                                                                MinimumHour="0"
+                                                                MinimumMinute="0"
+                                                                StringFormat="00" />
+                                                            <TextBlock
+                                                                VerticalAlignment="Center"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="to" />
+                                                            <local:NumericUpDownTime
+                                                                x:Name="HistoryTo"
+                                                                Width="55"
+                                                                Height="19"
+                                                                Margin="5,0,5,0"
+                                                                FinalValueHour="{Binding WtmSettings.HistoryTimeTo.Hour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                FinalValueMinute="{Binding WtmSettings.HistoryTimeTo.Minute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                                Foreground="{Binding HistoryTimeIsUpdated, Converter={StaticResource ForegroundConverter}}"
+                                                                IsEditing="{Binding WtmSettings.HistoryTimeEdit, Mode=TwoWay}"
+                                                                MaximumHour="23"
+                                                                MaximumMinute="59"
+                                                                MinimumHour="{Binding ElementName=HistoryFrom, Path=ValueHour}"
+                                                                StringFormat="00">
+                                                                <local:NumericUpDownTime.MinimumMinute>
+                                                                    <MultiBinding
+                                                                        Converter="{StaticResource MinutesCheckConverter}"
+                                                                        Mode="TwoWay"
+                                                                        UpdateSourceTrigger="PropertyChanged">
+                                                                        <Binding ElementName="HistoryFrom" Path="ValueHour" />
+                                                                        <Binding ElementName="HistoryFrom" Path="ValueMinute" />
+                                                                        <Binding ElementName="HistoryTo" Path="ValueHour" />
+                                                                    </MultiBinding>
+                                                                </local:NumericUpDownTime.MinimumMinute>
+                                                            </local:NumericUpDownTime>
+                                                        </StackPanel>
+                                                        <CheckBox
+                                                            Margin="0,10,0,0"
+                                                            Content="Save all active WhatToMine coins"
+                                                            IsChecked="{Binding WtmSettings.SaveAllCoins, Mode=TwoWay}"
+                                                            IsEnabled="{Binding WtmSettings.BackupHistoricalPrices}" />
+                                                        <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                                            <TextBlock Text="Scheduled: " />
+                                                            <TextBlock Text="{Binding HistoricalPricesSchedule, Converter={StaticResource ScheduledTimeConverted}}" />
+                                                        </StackPanel>
+                                                        <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                            <TextBlock Text="Last run: " />
+                                                            <TextBlock Text="{Binding HistoricalPricesLastTime, Converter={StaticResource ScheduledTimeConverted}}" />
+                                                        </StackPanel>
+                                                        <Button
+                                                            Width="80"
+                                                            Height="25"
+                                                            Margin="0,10,0,1"
+                                                            HorizontalAlignment="Left"
+                                                            VerticalAlignment="Bottom"
+                                                            Command="{Binding ElementName=TheMainWindow, Path=DataContext.ApplyHistoryBackup}"
+                                                            Content="Apply"
+                                                            IsEnabled="{Binding WtmSettings.BackupHistoricalPrices}" />
+                                                    </StackPanel>
+                                                </GroupBox>
+                                            </StackPanel>
+                                        </Expander>
+                                        <Expander
+                                            Margin="0,5,0,0"
+                                            Header="Advanced Settings"
+                                            IsExpanded="False">
+                                            <StackPanel Margin="5,10,0,0">
+                                                <StackPanel Margin="0,5,0,0" Orientation="Horizontal">
+                                                    <TextBlock VerticalAlignment="Center" Text="WhatToMine request interval:" />
+                                                    <local:NumericUpDown
+                                                        Width="55"
+                                                        Height="19"
+                                                        Margin="5,0,5,0"
+                                                        FinalValue="{Binding WtmSettings.WtmRequestInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                        Maximum="2147483647"
+                                                        Minimum="0" />
+                                                    <TextBlock VerticalAlignment="Center" Text="milliseconds" />
+                                                </StackPanel>
+                                                <GroupBox
+                                                    x:Name="Proxy"
+                                                    Margin="0,5,0,0"
+                                                    Padding="5"
+                                                    Header="Proxy">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="*" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="22" />
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="22" />
+                                                            <RowDefinition Height="22" />
+                                                        </Grid.RowDefinitions>
+                                                        <CheckBox
+                                                            Grid.Row="0"
+                                                            Grid.Column="0"
+                                                            Margin="0,0,5,0"
+                                                            VerticalAlignment="Center"
+                                                            Content="Use proxy: "
+                                                            IsChecked="{Binding WtmSettings.UseProxy}" />
+                                                        <TextBox
+                                                            Grid.Row="0"
+                                                            Grid.Column="1"
+                                                            IsEnabled="{Binding WtmSettings.UseProxy}"
+                                                            Text="{Binding WtmSettings.Proxy, Mode=TwoWay}" />
+                                                        <CheckBox
+                                                            Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            Margin="0,10"
+                                                            Content="Anonymous"
+                                                            IsChecked="{Binding WtmSettings.AnonymousProxy}" />
+                                                        <TextBlock
+                                                            Grid.Row="2"
+                                                            Grid.Column="0"
+                                                            VerticalAlignment="Center"
+                                                            Style="{StaticResource TextBlockEnable}"
+                                                            Text="User name:">
+                                                            <TextBlock.IsEnabled>
+                                                                <MultiBinding Converter="{StaticResource OneOfTwoConverter}">
+                                                                    <Binding Path="WtmSettings.UseProxy" />
+                                                                    <Binding Path="WtmSettings.AnonymousProxy" />
+                                                                </MultiBinding>
+                                                            </TextBlock.IsEnabled>
+                                                        </TextBlock>
+                                                        <TextBox
+                                                            Grid.Row="2"
+                                                            Grid.Column="1"
+                                                            Text="{Binding WtmSettings.ProxyUserName}">
+                                                            <TextBox.IsEnabled>
+                                                                <MultiBinding Converter="{StaticResource OneOfTwoConverter}">
+                                                                    <Binding Path="WtmSettings.UseProxy" />
+                                                                    <Binding Path="WtmSettings.AnonymousProxy" />
+                                                                </MultiBinding>
+                                                            </TextBox.IsEnabled>
+                                                        </TextBox>
+                                                        <TextBlock
+                                                            Grid.Row="3"
+                                                            Grid.Column="0"
+                                                            VerticalAlignment="Center"
+                                                            Style="{StaticResource TextBlockEnable}"
+                                                            Text="Password:">
+                                                            <TextBlock.IsEnabled>
+                                                                <MultiBinding Converter="{StaticResource OneOfTwoConverter}">
+                                                                    <Binding Path="WtmSettings.UseProxy" />
+                                                                    <Binding Path="WtmSettings.AnonymousProxy" />
+                                                                </MultiBinding>
+                                                            </TextBlock.IsEnabled>
+                                                        </TextBlock>
+                                                        <local:PasswordBoxPlus
+                                                            Grid.Row="3"
+                                                            Grid.Column="1"
+                                                            RealPassword="{Binding WtmSettings.ProxyPassword, Mode=TwoWay}">
+                                                            <local:PasswordBoxPlus.IsEnabled>
+                                                                <MultiBinding Converter="{StaticResource OneOfTwoConverter}">
+                                                                    <Binding Path="WtmSettings.UseProxy" />
+                                                                    <Binding Path="WtmSettings.AnonymousProxy" />
+                                                                </MultiBinding>
+                                                            </local:PasswordBoxPlus.IsEnabled>
+                                                        </local:PasswordBoxPlus>
+                                                    </Grid>
+                                                </GroupBox>
+                                                <GroupBox
+                                                    x:Name="Server"
+                                                    Margin="0,5,0,0"
+                                                    Padding="5"
+                                                    Header="Network settings">
+                                                    <StackPanel>
+
+
+                                                        <StackPanel Margin="0,5,0,10" Orientation="Horizontal">
+                                                            <TextBlock
+                                                                x:Name="PortTitle"
+                                                                VerticalAlignment="Center"
+                                                                Text="Port:" />
+                                                            <TextBox
+                                                                x:Name="PortTextBox"
+                                                                Height="25"
+                                                                Margin="5,0,0,0"
+                                                                VerticalContentAlignment="Center"
+                                                                Text="{Binding WtmSettings.TcpPort, Mode=TwoWay}" />
+                                                            <Button
+                                                                Width="70"
+                                                                Height="25"
+                                                                Margin="5,0,0,0"
+                                                                Command="{Binding GenerateRandomPort}"
+                                                                Content="Random" />
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock VerticalAlignment="Center" Text="Application mode:" />
+                                                            <ComboBox
+                                                                Height="25"
+                                                                Margin="5,0,0,0"
+                                                                VerticalContentAlignment="Center"
+                                                                ItemsSource="{Binding WtmSettings.ApplicationModes}"
+                                                                SelectedItem="{Binding WtmSettings.ApplicationMode, Mode=TwoWay}" />
+
+                                                        </StackPanel>
+
+
+                                                        <Grid Height="25" Margin="0,10">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="Auto" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock
+                                                                Grid.Column="0"
+                                                                VerticalAlignment="Center"
+                                                                IsEnabled="{Binding WtmSettings.ApplicationMode, Converter={StaticResource ApplicationModeConverter}}"
+                                                                Style="{StaticResource TextBlockEnable}"
+                                                                Text="Server name:" />
+                                                            <TextBox
+                                                                Grid.Column="1"
+                                                                Width="160"
+                                                                Margin="5,0,5,0"
+                                                                VerticalContentAlignment="Center"
+                                                                IsEnabled="{Binding WtmSettings.ApplicationMode, Converter={StaticResource ApplicationModeConverter}}">
+                                                                <TextBox.Style>
+                                                                    <Style TargetType="TextBox">
+                                                                        <Setter Property="Text" Value="{Binding WtmSettings.ServerName, Mode=TwoWay}" />
+                                                                        <Style.Triggers>
+                                                                            <MultiDataTrigger>
+                                                                                <MultiDataTrigger.Conditions>
+                                                                                    <Condition Binding="{Binding WtmSettings.ServerSettingsAreUpdated}" Value="False" />
+                                                                                    <Condition Binding="{Binding WtmSettings.ApplicationMode}" Value="Client" />
+                                                                                </MultiDataTrigger.Conditions>
+                                                                                <Setter Property="Foreground" Value="Red" />
+                                                                            </MultiDataTrigger>
+                                                                            <DataTrigger Binding="{Binding WtmSettings.ApplicationMode}" Value="Server">
+                                                                                <Setter Property="IsReadOnly" Value="True" />
+                                                                                <Setter Property="Text" Value="localhost" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBox.Style>
+                                                            </TextBox>
+                                                            <Button
+                                                                Grid.Column="2"
+                                                                Height="25"
+                                                                VerticalAlignment="Center"
+                                                                Command="{Binding TestConnection}"
+                                                                Content="Test Connection" />
+                                                        </Grid>
+                                                        <StackPanel Margin="0,0,0,10">
+                                                            <CheckBox
+                                                                VerticalAlignment="Center"
+                                                                Content="Update workers from the server"
+                                                                IsChecked="{Binding WtmSettings.UpdateWorkersFromServer}">
+                                                                <CheckBox.Style>
+                                                                    <Style TargetType="CheckBox">
+                                                                        <Setter Property="IsEnabled" Value="False" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding WtmSettings.ApplicationMode}" Value="Client">
+                                                                                <Setter Property="IsEnabled" Value="True" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </CheckBox.Style>
+                                                            </CheckBox>
+                                                            <CheckBox
+                                                                Margin="0,10,0,0"
+                                                                VerticalAlignment="Center"
+                                                                Content="Query WhatToMine if the server fails"
+                                                                IsChecked="{Binding WtmSettings.QueryWtmOnLocalServerFail}">
+                                                                <CheckBox.Style>
+                                                                    <Style TargetType="CheckBox">
+                                                                        <Setter Property="IsEnabled" Value="False" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding WtmSettings.ApplicationMode}" Value="Client">
+                                                                                <Setter Property="IsEnabled" Value="True" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </CheckBox.Style>
+                                                            </CheckBox>
+                                                            <CheckBox
+                                                                Margin="0,10,0,0"
+                                                                VerticalAlignment="Center"
+                                                                Content="Don't switch the server itself"
+                                                                IsChecked="{Binding WtmSettings.DontSwitchServer}">
+                                                                <CheckBox.Style>
+                                                                    <Style TargetType="CheckBox">
+                                                                        <Setter Property="IsEnabled" Value="False" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding WtmSettings.ApplicationMode}" Value="Server">
+                                                                                <Setter Property="IsEnabled" Value="True" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </CheckBox.Style>
+                                                            </CheckBox>
+                                                        </StackPanel>
+                                                        <Button
+                                                            Width="80"
+                                                            Height="25"
+                                                            HorizontalAlignment="Left"
+                                                            VerticalAlignment="Bottom"
+                                                            Command="{Binding ApplyServerSettings}"
+                                                            Content="Apply"
+                                                            IsEnabled="{Binding WtmSettings.ApplicationMode, Converter={StaticResource ApplicationModeConverter}}" />
+                                                    </StackPanel>
+                                                </GroupBox>
+                                            </StackPanel>
+                                        </Expander>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </DockPanel>
+</Window>

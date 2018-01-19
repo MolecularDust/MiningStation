@@ -1,0 +1,28 @@
+﻿<Window
+    x:Class="Mining_Station.ProgressWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Progress"
+    Width="350"
+    SizeToContent="Height"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <StackPanel Margin="10">
+        <TextBlock
+            x:Name="Status"
+            Margin="10"
+            HorizontalAlignment="Center"
+            Foreground="Black"
+            Text="Downloading..." />
+        <ProgressBar
+            x:Name="Progress"
+            Height="20"
+            Margin="10"
+            Maximum="1"
+            Minimum="0"
+            Orientation="Horizontal" />
+    </StackPanel>
+</Window>

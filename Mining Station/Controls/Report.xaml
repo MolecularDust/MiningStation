@@ -1,0 +1,68 @@
+﻿<Window
+    x:Class="Mining_Station.Report"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Width="550"
+    Height="300"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="45" />
+        </Grid.RowDefinitions>
+        <DockPanel
+            Grid.Row="0"
+            Background="{StaticResource SingleCell}">
+            <TextBlock
+                x:Name="Header"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontWeight="SemiBold" />
+        </DockPanel>
+        <Border
+            Grid.Row="1"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0.75,0,0.75">
+            <RichTextBox
+                x:Name="RichTextBox"
+                BorderThickness="0"
+                ScrollViewer.VerticalScrollBarVisibility="Visible" />
+        </Border>
+
+        <TextBlock
+            x:Name="Footer"
+            Grid.Row="2"
+            Margin="0,15,0,15"
+            HorizontalAlignment="Center" />
+        <Border
+            Grid.Row="3"
+            Grid.ColumnSpan="2"
+            Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
+            BorderBrush="{StaticResource ButtonStroke}"
+            BorderThickness="0,0.75,0,0">
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button
+                    x:Name="ButtonOk"
+                    Width="70"
+                    Height="25"
+                    Margin="0,0,10,0"
+                    Click="ButtonOk_Click"
+                    Content="OK"
+                    IsDefault="True" />
+                <Button
+                    x:Name="ButtonCancel"
+                    Width="70"
+                    Height="25"
+                    Click="ButtonCancel_Click"
+                    Content="Cancel"
+                    IsCancel="True" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

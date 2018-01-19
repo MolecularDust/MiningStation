@@ -1,0 +1,398 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Mining_Station">
+
+    <local:ValueToBoolConverter x:Key="ValueToBoolConverter" />
+    <local:ThisPcToColorConverter x:Key="ThisPcToColorConverter" />
+    <local:SwitchToNameConverter x:Key="SwitchToNameConverter" />
+    <local:IntToDaysConverter x:Key="IntToDaysConverter" />
+    <local:PeriodEnableConverter x:Key="PeriodEnableConverter" />
+    <local:MultiBindingParameterConverter x:Key="MultiBindingParameterConverter" />
+    <local:StringToListConverter x:Key="StringToListConverter" />
+    <local:MinutesCheckConverter x:Key="MinutesCheckConverter" />
+    <!--<local:AddConditionParameterConverter x:Key="AddConditionParameterConverter" />-->
+    <!--<local:SellButtonConverter x:Key="SellButtonConverter" />-->
+    <!--<local:BalanceConverter x:Key="BalanceConverter" />-->
+    <!--<local:BorderFirstConverter x:Key="BorderFirstConverter" />-->
+    <local:ForegroundConverter x:Key="ForegroundConverter" />
+    <local:CurrencyToStringFormatConverter x:Key="CurrencyToStringFormatConverter" />
+    <local:ScheduledTimeConverted x:Key="ScheduledTimeConverted" />
+    <local:RemoveLastSConverter x:Key="RemoveLastSConverter" />
+    <local:OneOfTwoConverter x:Key="OneOfTwoConverter" />
+    <local:BothAndConverter x:Key="BothAndConverter" />
+    <local:KillListConverter x:Key="KillListConverter" />
+    <local:DaysHoursConverter x:Key="DaysHoursConverter" />
+    <local:ApplicationModeConverter x:Key="ApplicationModeConverter" />
+    <local:InverseBoolConverter x:Key="InverseBoolConverter" />
+    <local:CoinStatusConverter x:Key="CoinStatusConverter" />
+    <!--<local:SelectedCoinColorConverter x:Key="SelectedCoinColorConverter"/>-->
+    <local:ThisPcInfoConverter x:Key="ThisPcInfoConverter" />
+
+    <local:TestConverter x:Key="TestConverter" />
+
+    <SolidColorBrush x:Key="ButtonStroke" Color="#688CAF" />
+    <SolidColorBrush x:Key="MouseOver" Color="#FF82BEF7" />
+    <SolidColorBrush x:Key="Disabled" Color="#FFD7D7D7" />
+    <SolidColorBrush x:Key="SingleCell" Color="#FFF5FBFF" />
+    <SolidColorBrush x:Key="MultiCell" Color="#FFFFFBF5" />
+    <SolidColorBrush x:Key="RedCell" Color="#1EFF0000" />
+    <SolidColorBrush x:Key="RedCellSelected" Color="#FFEADEE2" />
+    <SolidColorBrush x:Key="DarkBlue" Color="#688CAF" />
+    <SolidColorBrush x:Key="SuccessGreen" Color="#FF3D9F5A" />
+    <SolidColorBrush x:Key="FailureRed" Color="Salmon" />
+    <SolidColorBrush x:Key="Server" Color="LightSeaGreen" />
+    <SolidColorBrush x:Key="LightGreenCell" Color="#FFF5FFF6" />
+    <SolidColorBrush x:Key="LightRedCell" Color="#FFFFF5F5" />
+
+    <Style x:Key="TextBlockEnable" TargetType="{x:Type TextBlock}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.5" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="TextBoxEnable" TargetType="{x:Type TextBox}">
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="false">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="DataGridHeaderCenter" TargetType="DataGridColumnHeader">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="ThinCell" TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0.25,0.25,0,0" />
+        <Setter Property="BorderBrush" Value="#688CAF" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style x:Key="ThinCell_0110" TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0,0.25,0.25,0" />
+        <Setter Property="BorderBrush" Value="#688CAF" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+    <Style x:Key="DataGridRowBase" TargetType="DataGridRow">
+        <Setter Property="Height" Value="20" />
+        <Setter Property="Background" Value="{StaticResource SingleCell}" />
+        <Style.Resources>
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
+            <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+        </Style.Resources>
+    </Style>
+    <Style x:Key="ColumnElementStyle" TargetType="TextBlock">
+        <Setter Property="Margin" Value="6,1,6,1" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="DataGridCellBlue"
+        BasedOn="{StaticResource ThinCell}"
+        TargetType="DataGridCell">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="DataGridCell">
+                    <Border Name="rowBorder" BorderBrush="{StaticResource ButtonStroke}">
+                        <Border Name="columnBorder" BorderBrush="{StaticResource ButtonStroke}">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Column.DisplayIndex}" Value="0">
+                                            <Setter Property="BorderThickness" Value="0,0.25,0,0" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                    <Setter Property="BorderThickness" Value="0.25,0.25,0,0" />
+                                </Style>
+                            </Border.Style>
+                            <ContentPresenter Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}" />
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="ThinBorder1110" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1,1,1,0" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonStroke}" />
+    </Style>
+    <Style x:Key="ThinBorder1011" TargetType="Border">
+        <Setter Property="BorderThickness" Value="1,0,1,1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonStroke}" />
+    </Style>
+    <Style x:Key="ThinBorder0001" TargetType="Border">
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="BorderBrush" Value="{StaticResource ButtonStroke}" />
+    </Style>
+    <Style
+        x:Key="ThinBorder1111"
+        BasedOn="{StaticResource ThinBorder1110}"
+        TargetType="Border">
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style x:Key="RowUpButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Path
+                        x:Name="PathUp"
+                        Fill="Transparent"
+                        Stretch="Fill"
+                        Stroke="{StaticResource ButtonStroke}"
+                        StrokeThickness="0.75">
+                        <Path.Data>
+                            <PathGeometry Figures="M 4,9 H 16 L 10,3 Z" />
+                        </Path.Data>
+                    </Path>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PathUp" Property="Stroke" Value="{StaticResource MouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PathUp" Property="Stroke" Value="{StaticResource Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="RowDownButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Path
+                        x:Name="PathDown"
+                        Fill="Transparent"
+                        Stretch="Fill"
+                        Stroke="{StaticResource ButtonStroke}"
+                        StrokeThickness="0.75">
+                        <Path.Data>
+                            <PathGeometry Figures="M 4,1 H 16 L 10,7 Z" />
+                        </Path.Data>
+                    </Path>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PathDown" Property="Stroke" Value="{StaticResource MouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PathDown" Property="Stroke" Value="{StaticResource Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="PlusButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Viewbox>
+                        <Path
+                            x:Name="PlusPath"
+                            Fill="Transparent"
+                            Stroke="{StaticResource ButtonStroke}"
+                            StrokeEndLineCap="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeThickness="2">
+                            <Path.Data>
+                                <GeometryGroup>
+                                    <EllipseGeometry
+                                        Center="20,20"
+                                        RadiusX="20"
+                                        RadiusY="20" />
+                                    <LineGeometry StartPoint="12,20" EndPoint="28,20" />
+                                    <LineGeometry StartPoint="20,12" EndPoint="20,28" />
+                                </GeometryGroup>
+                            </Path.Data>
+                        </Path>
+                    </Viewbox>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PlusPath" Property="Stroke" Value="{StaticResource MouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="PlusPath" Property="Stroke" Value="{StaticResource Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="MinusButton" TargetType="Button">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Viewbox>
+                        <Path
+                            x:Name="MinusPath"
+                            Fill="Transparent"
+                            Stroke="{StaticResource ButtonStroke}"
+                            StrokeEndLineCap="Round"
+                            StrokeStartLineCap="Round"
+                            StrokeThickness="2">
+                            <Path.Data>
+                                <GeometryGroup>
+                                    <EllipseGeometry
+                                        Center="20,20"
+                                        RadiusX="20"
+                                        RadiusY="20" />
+                                    <LineGeometry StartPoint="12,20" EndPoint="28,20" />
+                                </GeometryGroup>
+                            </Path.Data>
+                        </Path>
+                    </Viewbox>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MinusPath" Property="Stroke" Value="{StaticResource MouseOver}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="MinusPath" Property="Stroke" Value="{StaticResource Disabled}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="DataGridRowMinor" TargetType="DataGridRow">
+        <Setter Property="MinHeight" Value="22" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,0.25,0,0" />
+        <Setter Property="BorderBrush" Value="#688CAF" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=PreviousData}}" Value="{x:Null}">
+                <Setter Property="BorderThickness" Value="0" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="CenterCell" TargetType="{x:Type FrameworkElement}">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="ExpanderHeader" TargetType="{x:Type TextBlock}">
+        <Setter Property="Height" Value="22" />
+        <Setter Property="Margin" Value="21,0,0,0" />
+        <Setter Property="Padding" Value="9,3,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+    <Style x:Key="DataGridColumnHeader" TargetType="DataGridColumnHeader">
+        <Setter Property="Padding" Value="7,5,7,5" />
+    </Style>
+    <Style x:Key="DataGridCheckBoxColumnStyle" TargetType="ContentControl">
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style
+        x:Key="ThinCellRed"
+        BasedOn="{StaticResource ThinCell_0110}"
+        TargetType="DataGridCell">
+        <Style.Triggers>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ProfitDay, Converter={StaticResource ValueToBoolConverter}}" Value="True" />
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="False" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource RedCell}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ProfitDay, Converter={StaticResource ValueToBoolConverter}}" Value="True" />
+                    <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="Background" Value="{StaticResource RedCellSelected}" />
+            </MultiDataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="DataGridRowTransparent" TargetType="DataGridRow">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style x:Key="DatagridCellNoSelection" TargetType="DataGridCell">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Style.Triggers>
+            <Trigger Property="DataGridCell.IsSelected" Value="True">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+                <Setter Property="Background">
+                    <Setter.Value>
+                        <SolidColorBrush Color="Transparent" />
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <DataTemplate x:Key="PCIndeterminte">
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontWeight="Bold"
+            Foreground="Gray"
+            Text="?" />
+    </DataTemplate>
+    <DataTemplate x:Key="PCSearching">
+        <Viewbox Width="14">
+            <local:ucSpinnerApple />
+        </Viewbox>
+    </DataTemplate>
+    <DataTemplate x:Key="PCOnline">
+        <Viewbox
+            x:Name="ComputerIconOnline"
+            Height="12"
+            Margin="-2,0,0,0">
+            <Path
+                Data="F1 M 26,24L 29,24L 29,33L 26,33L 26,24 Z M 31,25L 34,25L 34,39L 31,39L 29,41L 29,51L 26,51L 26,41L 24,39L 21,39L 21,25L 24,25L 24,35L 31,35L 31,25 Z M 30,48L 30,44L 51,44L 51,30L 35,30L 35,26L 56,26L 56,48L 42,48L 42,51L 46,51L 47,54L 33,54L 34,51L 38,51L 38,48L 30,48 Z "
+                Fill="{Binding Source={StaticResource SuccessGreen}}"
+                Stretch="Fill" />
+        </Viewbox>
+    </DataTemplate>
+    <DataTemplate x:Key="ServerOnline">
+        <Viewbox
+            x:Name="ComputerIconOnline"
+            Height="12"
+            Margin="-2,0,0,0">
+            <Path
+                Data="F1 M 40,44L 39.9999,51L 44,51C 45.1046,51 46,51.8954 46,53L 46,57C 46,58.1046 45.1045,59 44,59L 32,59C 30.8954,59 30,58.1046 30,57L 30,53C 30,51.8954 30.8954,51 32,51L 36,51L 36,44L 40,44 Z M 47,53L 57,53L 57,57L 47,57L 47,53 Z M 29,53L 29,57L 19,57L 19,53L 29,53 Z M 19,22L 57,22L 57,31L 19,31L 19,22 Z M 55,24L 53,24L 53,29L 55,29L 55,24 Z M 51,24L 49,24L 49,29L 51,29L 51,24 Z M 47,24L 45,24L 45,29L 47,29L 47,24 Z M 21,27L 21,29L 23,29L 23,27L 21,27 Z M 19,33L 57,33L 57,42L 19,42L 19,33 Z M 55,35L 53,35L 53,40L 55,40L 55,35 Z M 51,35L 49,35L 49,40L 51,40L 51,35 Z M 47,35L 45,35L 45,40L 47,40L 47,35 Z M 21,38L 21,40L 23,40L 23,38L 21,38 Z "
+                Fill="{Binding Source={StaticResource SuccessGreen}}"
+                Stretch="Fill" />
+        </Viewbox>
+    </DataTemplate>
+    <DataTemplate x:Key="PCOffline">
+        <Viewbox x:Name="ComputerIconOffline" Height="12">
+            <Path
+                Data="F1 M 48.0542,39.5833L 53.0417,44.5708L 58.0291,39.5834L 60.1666,41.7209L 55.1792,46.7083L 60.1667,51.6958L 58.0292,53.8333L 53.0417,48.8458L 48.0542,53.8333L 45.9167,51.6958L 50.9042,46.7083L 45.9167,41.7208L 48.0542,39.5833 Z M 24,24L 27,24L 27,33L 24,33L 24,24 Z M 29,25L 32,25L 32,39L 29,39L 27,41L 27,51L 24,51L 24,41L 22,39L 19,39L 19,25L 22,25L 22,35L 29,35L 29,25 Z M 28,48L 28,44L 45.5,44L 48.0541,46.7083L 47,48L 40,48L 40,51L 44,51L 45,54L 31,54L 32,51L 36,51L 36,48L 28,48 Z M 49,30L 33,30L 33,26L 54,26L 54,40.75L 53.0416,41.7209L 49,37.75L 49,30 Z "
+                Fill="{Binding Source={StaticResource FailureRed}}"
+                Stretch="Fill" />
+        </Viewbox>
+    </DataTemplate>
+    <Style x:Key="OnlineStatusSwitch" TargetType="ContentControl">
+        <Setter Property="ContentTemplate" Value="{StaticResource PCIndeterminte}" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding OnlineStatus}" Value="1">
+                <Setter Property="ContentTemplate" Value="{StaticResource PCSearching}" />
+            </DataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding OnlineStatus}" Value="2" />
+                    <Condition Binding="{Binding ApplicationMode}" Value="Server" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="ContentTemplate" Value="{StaticResource ServerOnline}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding OnlineStatus}" Value="2" />
+                    <Condition Binding="{Binding ApplicationMode}" Value="Standalone" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="ContentTemplate" Value="{StaticResource PCOnline}" />
+            </MultiDataTrigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding OnlineStatus}" Value="2" />
+                    <Condition Binding="{Binding ApplicationMode}" Value="Client" />
+                </MultiDataTrigger.Conditions>
+                <Setter Property="ContentTemplate" Value="{StaticResource PCOnline}" />
+            </MultiDataTrigger>
+            <DataTrigger Binding="{Binding OnlineStatus}" Value="3">
+                <Setter Property="ContentTemplate" Value="{StaticResource PCOffline}" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+</ResourceDictionary>

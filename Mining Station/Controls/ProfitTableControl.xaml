@@ -1,0 +1,350 @@
+﻿<UserControl
+    x:Class="Mining_Station.ProfitTableControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:Mining_Station"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="300"
+    d:DesignWidth="300"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <local:DummyRowHeightConverter x:Key="DummyRowHeightConverter" />
+        <SolidColorBrush x:Key="ProfitTableBackGround" Color="{Binding Source={StaticResource SingleCell}, Path=Color}" />
+    </UserControl.Resources>
+    <ItemsControl
+        Margin="15"
+        VerticalAlignment="Top"
+        DataContext="{Binding ElementName=TheMainWindow, Path=DataContext}"
+        ItemsSource="{Binding ProfitTables.Tables, UpdateSourceTrigger=PropertyChanged}"
+        UseLayoutRounding="True"
+        VirtualizingStackPanel.IsVirtualizing="True"
+        VirtualizingStackPanel.VirtualizationMode="Recycling">
+        <ItemsControl.ContextMenu>
+            <ContextMenu>
+                <MenuItem
+                    Command="{Binding ClearProfitTables}"
+                    DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                    Header="Clear Profit Tables" />
+            </ContextMenu>
+        </ItemsControl.ContextMenu>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate>
+                <Grid Margin="0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Border
+                        Grid.Row="0"
+                        Background="{Binding ThisPC, Converter={StaticResource ThisPcToColorConverter}, ConverterParameter=Border}"
+                        Style="{StaticResource ThinBorder1110}">
+                        <StackPanel Margin="5,3,5,3" Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center" Text="Worker: ">
+                                <TextBlock.Inlines>
+                                    <Run Text="{Binding Name}" />
+                                </TextBlock.Inlines>
+                            </TextBlock>
+                            <TextBlock>
+                                <i:Interaction.Behaviors>
+                                    <local:TextBlockBindableInlinesBehavior BindableInlines="{Binding ThisPC, Converter={StaticResource ThisPcInfoConverter}}" />
+                                </i:Interaction.Behaviors>
+                            </TextBlock>
+                        </StackPanel>
+                    </Border>
+                    <Border
+                        Grid.Row="1"
+                        Background="{Binding ThisPC, Converter={StaticResource ThisPcToColorConverter}, ConverterParameter=Border}"
+                        Style="{StaticResource ThinBorder1110}">
+                        <StackPanel Margin="5,3,5,3" Orientation="Horizontal">
+                            <TextBlock Foreground="Black" Text="Description: " />
+                            <TextBlock Text="{Binding Description}" />
+                        </StackPanel>
+                    </Border>
+                    <Border
+                        Grid.Row="2"
+                        Background="{StaticResource ProfitTableBackGround}"
+                        Style="{StaticResource ThinBorder1111}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollViewer Grid.Column="0">
+                                <Grid x:Name="ProfitTableHolder" Background="{StaticResource ProfitTableBackGround}">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <DataGrid
+                                        Name="DataGridProfit"
+                                        Grid.Row="0"
+                                        AutoGenerateColumns="False"
+                                        BorderThickness="0"
+                                        CanUserAddRows="False"
+                                        ColumnHeaderStyle="{StaticResource DataGridColumnHeader}"
+                                        GridLinesVisibility="None"
+                                        HeadersVisibility="Column"
+                                        IsReadOnly="True"
+                                        ItemsSource="{Binding ProfitList}"
+                                        LostFocus="DataGridProfit_LostFocus"
+                                        Tag="{Binding ElementName=TheMainWindow, Path=DataContext}"
+                                        UseLayoutRounding="False">
+                                        <DataGrid.ContextMenu>
+                                            <ContextMenu>
+                                                <i:Interaction.Behaviors>
+                                                    <local:ShowColumnsMenuBehavior />
+                                                </i:Interaction.Behaviors>
+                                                <MenuItem
+                                                    Command="{Binding ClearProfitTables}"
+                                                    DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                    Header="Clear Profit Tables" />
+                                            </ContextMenu>
+                                        </DataGrid.ContextMenu>
+                                        <DataGrid.Resources>
+                                            <Style TargetType="DataGridColumnHeader">
+                                                <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                            </Style>
+                                            <DataTemplate x:Key="NameTemplate">
+                                                <TextBlock
+                                                    Margin="5,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding Name}" />
+                                            </DataTemplate>
+                                            <DataTemplate x:Key="SymbolTemplate">
+                                                <TextBlock
+                                                    Margin="5,0"
+                                                    VerticalAlignment="Center"
+                                                    Text="{Binding Symbol}" />
+                                            </DataTemplate>
+                                            <DataTemplate x:Key="NameAndSymbolTemplate">
+                                                <TextBlock Margin="5,0" VerticalAlignment="Center">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                                            <Binding Path="Name" />
+                                                            <Binding Path="Symbol" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </DataTemplate>
+                                        </DataGrid.Resources>
+                                        <DataGrid.RowStyle>
+                                            <Style TargetType="DataGridRow">
+                                                <Style.Resources>
+                                                    <SolidColorBrush
+                                                        x:Key="{x:Static SystemColors.HighlightBrushKey}"
+                                                        Opacity="0.25"
+                                                        Color="LightBlue" />
+                                                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                                                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
+                                                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
+                                                </Style.Resources>
+                                                <Setter Property="Background" Value="{StaticResource SingleCell}" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Multicell}" Value="true">
+                                                        <Setter Property="Background" Value="{StaticResource MultiCell}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DataGrid.RowStyle>
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn ElementStyle="{StaticResource ColumnElementStyle}" Header="Coin">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style BasedOn="{StaticResource ThinCell_0110}" TargetType="DataGridCell">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="Name">
+                                                                <Setter Property="ContentTemplate" Value="{StaticResource NameTemplate}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="SYMBOL">
+                                                                <Setter Property="ContentTemplate" Value="{StaticResource SymbolTemplate}" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="Name (SYMBOL)">
+                                                                <Setter Property="ContentTemplate" Value="{StaticResource NameAndSymbolTemplate}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                Binding="{Binding Algorithm}"
+                                                CellStyle="{StaticResource ThinCell_0110}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Algorithm" />
+                                            <DataGridTextColumn
+                                                Binding="{Binding Hashrate}"
+                                                CellStyle="{StaticResource ThinCell_0110}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Hashrate" />
+                                            <DataGridTemplateColumn CellStyle="{StaticResource ThinCell_0110}" Header="Switch">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <RadioButton
+                                                            HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            GroupName="{Binding ElementName=DataGridProfit, Path=DataContext.Index}"
+                                                            IsChecked="{Binding ManualSwitch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn
+                                                CellStyle="{StaticResource ThinCell_0110}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Revenue"
+                                                SortMemberPath="Revenue">
+                                                <DataGridTextColumn.Binding>
+                                                    <MultiBinding Converter="{StaticResource CurrencyToStringFormatConverter}">
+                                                        <Binding Path="Revenue" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.DisplayCurrency" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.CurrencyRate" />
+                                                    </MultiBinding>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                CellStyle="{StaticResource ThinCellRed}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Profit Day"
+                                                SortMemberPath="ProfitDay">
+                                                <DataGridTextColumn.Binding>
+                                                    <MultiBinding Converter="{StaticResource CurrencyToStringFormatConverter}">
+                                                        <Binding Path="ProfitDay" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.DisplayCurrency" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.CurrencyRate" />
+                                                    </MultiBinding>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                CellStyle="{StaticResource ThinCellRed}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Profit Week"
+                                                SortMemberPath="ProfitWeek">
+                                                <DataGridTextColumn.Binding>
+                                                    <MultiBinding Converter="{StaticResource CurrencyToStringFormatConverter}">
+                                                        <Binding Path="ProfitWeek" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.DisplayCurrency" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.CurrencyRate" />
+                                                    </MultiBinding>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                CellStyle="{StaticResource ThinCellRed}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Profit Month"
+                                                SortMemberPath="ProfitMonth">
+                                                <DataGridTextColumn.Binding>
+                                                    <MultiBinding Converter="{StaticResource CurrencyToStringFormatConverter}">
+                                                        <Binding Path="ProfitMonth" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.DisplayCurrency" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.CurrencyRate" />
+                                                    </MultiBinding>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                CellStyle="{StaticResource ThinCellRed}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Profit Year"
+                                                SortMemberPath="ProfitYear">
+                                                <DataGridTextColumn.Binding>
+                                                    <MultiBinding Converter="{StaticResource CurrencyToStringFormatConverter}">
+                                                        <Binding Path="ProfitYear" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.DisplayCurrency" />
+                                                        <Binding ElementName="TheMainWindow" Path="DataContext.WtmSettings.CurrencyRate" />
+                                                    </MultiBinding>
+                                                </DataGridTextColumn.Binding>
+                                            </DataGridTextColumn>
+                                            <DataGridTextColumn
+                                                Width="*"
+                                                Binding="{Binding Notes}"
+                                                CellStyle="{StaticResource ThinCell_0110}"
+                                                ElementStyle="{StaticResource ColumnElementStyle}"
+                                                Header="Notes" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Border
+                                        x:Name="ProfitTableDummyRow"
+                                        Grid.Row="1"
+                                        BorderBrush="{StaticResource ButtonStroke}"
+                                        BorderThickness="{Binding RelativeSource={RelativeSource Self}, Path=ActualHeight, Converter={StaticResource DummyRowHeightConverter}}"
+                                        UseLayoutRounding="True">
+                                        <Border
+                                            BorderBrush="Violet"
+                                            BorderThickness="0,0,0.25,0"
+                                            UseLayoutRounding="False" />
+                                    </Border>
+                                </Grid>
+                            </ScrollViewer>
+                            <ScrollViewer Grid.Column="1" Tag="{Binding ElementName=TheMainWindow, Path=DataContext}">
+                                <ScrollViewer.ContextMenu>
+                                    <ContextMenu x:Name="ProfitTableContextMenu" DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                                        <MenuItem Header="Expand/Collapse">
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.ExpandAll}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Expand All" />
+                                            <MenuItem Command="{Binding ProfitTables.ExpandAll_AllWorkers}" Header="Expand All In All Workers" />
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.CollapseAll}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Collapse All" />
+                                            <MenuItem Command="{Binding ProfitTables.CollapseAll_AllWorkers}" Header="Collapse All In All Workers" />
+                                        </MenuItem>
+                                        <MenuItem Header="Switch">
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.SwitchAll}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Switch All" />
+                                            <MenuItem Command="{Binding ProfitTables.SwitchAll_AllWorkers}" Header="Switch All In All Workers" />
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.SwitchNone}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Switch None" />
+                                            <MenuItem Command="{Binding ProfitTables.SwitchNone_AllWorkers}" Header="Switch None In All Workers" />
+                                        </MenuItem>
+                                        <MenuItem Header="Restart">
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.RestartAll}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Restart All" />
+                                            <MenuItem Command="{Binding ProfitTables.RestartAll_AllWorkers}" Header="Restart All In All Workers" />
+                                            <MenuItem
+                                                Command="{Binding ProfitTables.RestartNone}"
+                                                CommandParameter="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                                Header="Restart None" />
+                                            <MenuItem Command="{Binding ProfitTables.RestartNone_AllWorkers}" Header="Restart None In All Workers" />
+                                        </MenuItem>
+                                        <MenuItem>
+                                            <MenuItem.Style>
+                                                <Style TargetType="MenuItem">
+                                                    <Setter Property="Header" Value="Scan LAN" />
+                                                    <Setter Property="Command" Value="{Binding PlacementTarget.Tag.ScanLan, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding PlacementTarget.Tag.ScanLanIsInProgress, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                                            <Setter Property="Header" Value="Stop Scan" />
+                                                            <Setter Property="Command" Value="{Binding PlacementTarget.Tag.ScanLanStop, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </MenuItem.Style>
+                                        </MenuItem>
+                                        <MenuItem
+                                            Command="{Binding ClearProfitTables}"
+                                            DataContext="{Binding PlacementTarget.Tag, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                                            Header="Clear Profit Tables" />
+                                    </ContextMenu>
+                                </ScrollViewer.ContextMenu>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <local:ComputersTable Grid.Row="0" SnapsToDevicePixels="True" />
+                                </Grid>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>
