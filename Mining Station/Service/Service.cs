@@ -19,8 +19,11 @@ namespace Mining_Station
 
         public static void Configure(ServiceConfiguration config)
         {
+            NetTcpBinding binding = new NetTcpBinding();
+            binding.Security.Mode = SecurityMode.None;
+
             ServiceEndpoint accessPointEndpoint = new ServiceEndpoint(ContractDescription.GetContract(typeof(IAccessPoint)),
-                new NetTcpBinding(), new EndpointAddress("net.tcp://localhost:" + NetHelper.Port.ToString() + Constants.AccessPoint));
+                binding, new EndpointAddress("net.tcp://localhost:" + NetHelper.Port.ToString() + Constants.AccessPoint));
             config.AddServiceEndpoint(accessPointEndpoint);
 
             ServiceEndpoint streamServerEndpoint = new ServiceEndpoint(ContractDescription.GetContract(typeof(IStreamServer)),
@@ -42,6 +45,8 @@ namespace Mining_Station
         public static NetTcpBinding StreamedTcpBinding()
         {
             NetTcpBinding tcpBinding = new NetTcpBinding();
+            tcpBinding.Security.Mode = SecurityMode.None;
+
             tcpBinding.TransferMode = TransferMode.Streamed;
             tcpBinding.MaxReceivedMessageSize = 2147483647;
             tcpBinding.ReceiveTimeout = TimeSpan.FromHours(1);
@@ -52,9 +57,10 @@ namespace Mining_Station
         }
 
 
-        public static IAccessPoint NewChannel(string serverAddress, TimeSpan timeOut = default(TimeSpan)) 
+        public static IAccessPoint NewChannel(string serverAddress, TimeSpan timeOut = default(TimeSpan))
         {
             NetTcpBinding binding = new NetTcpBinding();
+            binding.Security.Mode = SecurityMode.None;
 
             if (timeOut != default(TimeSpan))
                 binding.SendTimeout = timeOut;
@@ -68,6 +74,7 @@ namespace Mining_Station
         public static IStreamServer NewStreamChannel(string serverAddress, TimeSpan timeOut = default(TimeSpan))
         {
             NetTcpBinding binding = StreamedTcpBinding();
+            binding.Security.Mode = SecurityMode.None;
 
             if (timeOut != default(TimeSpan))
                 binding.SendTimeout = timeOut;
