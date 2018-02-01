@@ -42,7 +42,7 @@ namespace Mining_Station
             {
                 try
                 {
-                    var selectedWorkers = Workers.WorkerList.Where(x => x.Query).Select(x=> x.Name);
+                    var selectedWorkers = Workers.WorkerList.Where(x => x.Query).Select(x => x.Name);
                     var selectedTables = ProfitTables.Tables.Where(x => selectedWorkers.Contains(x.Name));
 
                     switch (extension)
@@ -81,8 +81,8 @@ namespace Mining_Station
                             writer.Write(json);
                             break;
                         case ".xml":
-                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(ObservableCollection<ProfitTable>));
-                            xmlSerializer.Serialize(writer, selectedTables);
+                            XmlSerializer xmlSerializer = new XmlSerializer(typeof(List<ProfitTable>));
+                            xmlSerializer.Serialize(writer, selectedTables.ToList());
                             break;
                     }
                 }
