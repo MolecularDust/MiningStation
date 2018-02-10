@@ -8,4 +8,8 @@ Mining Station is not for greedy people but for lazy ones. Autoswitch doesn’t 
 
 Mining Station is portable application. To install it simply copy the Mining Station.exe file to the folder of your choice. When migrating to a different machine simple copy this folder. Workers.cfg contains the rig configuration templates and WtmSettings.cfg contains app's settings.
 
+[Manual](https://github.com/MolecularDust/MiningStation/blob/master/Mining%20Station%20Manual%20ENG.pdf)
+
 [Releases](https://github.com/MolecularDust/MiningStation/releases)
+
+[Video tutorial](https://youtu.be/0pyUDU-JxZ8)
