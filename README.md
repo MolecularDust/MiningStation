@@ -1,6 +1,6 @@
 # MiningStation
 Mining Station
-Mining Station is mining algorithm autoswitching solution based on popular online service whattomine.com. All you need to do is to tell it what coins are to be mined by a rig, what are their hashrates, energy consumption etc. Then you will be able to calculate profit individually for each rig, check which machines are online, what are the coins they mine and switch coins manually as well as automatically on multiple machines at once.
+Mining Station is mining algorithm autoswitching solution for Windows based on popular online service whattomine.com. All you need to do is to tell it what coins are to be mined by a rig, what are their hashrates, energy consumption etc. Then you will be able to calculate profit individually for each rig, check which machines are online, what are the coins they mine and switch coins manually as well as automatically on multiple machines at once.
 
 ![alt text](https://i.imgur.com/sWZQFD5.jpg)
 
