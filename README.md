@@ -1,6 +1,8 @@
 # MiningStation
 Mining Station
-Mining Station is mining algorithm autoswitching solution based on popular online service whattomine.com. All you need to do is to tell it what coins are to be mined by a rig, what are their hashrates, energy consumption etc. Then you will be able to calculate profit individually for each rig, check which machines are online, what are the coins they mine and switch coins manually as well as automatically on multiple machines at once. 
+Mining Station is mining algorithm autoswitching solution for Windows based on popular online service whattomine.com. All you need to do is to tell it what coins are to be mined by a rig, what are their hashrates, energy consumption etc. Then you will be able to calculate profit individually for each rig, check which machines are online, what are the coins they mine and switch coins manually as well as automatically on multiple machines at once.
+
+![alt text](https://i.imgur.com/sWZQFD5.jpg)
 
 The application is free and open source. You don't have to edit config files meticulously, instead you can tune almost everything via neat and practical GUI. 
 
@@ -8,4 +10,8 @@ Mining Station is not for greedy people but for lazy ones. Autoswitch doesn’t 
 
 Mining Station is portable application. To install it simply copy the Mining Station.exe file to the folder of your choice. When migrating to a different machine simple copy this folder. Workers.cfg contains the rig configuration templates and WtmSettings.cfg contains app's settings.
 
-Releases: https://github.com/MolecularDust/MiningStation/releases
+[Manual](https://github.com/MolecularDust/MiningStation/blob/master/Mining%20Station%20Manual%20ENG.pdf)
+
+[Releases](https://github.com/MolecularDust/MiningStation/releases)
+
+[Video tutorial](https://youtu.be/0pyUDU-JxZ8)
