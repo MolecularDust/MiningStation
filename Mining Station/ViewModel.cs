@@ -223,9 +223,8 @@ namespace Mining_Station
                 Workers = new Workers(true).Clone();
                 DefaultWorkers = true;
             }
-                
-            Workers.PropertyChanging += Workers_PropertyChanging;
-            Workers.PropertyChanged += Workers_PropertyChanged;
+
+            WorkersPropertyEventsAdd();
 
             // Read Wtm settings from file or create default settings
             WtmSettings = WtmSettingsObject.ReadWtmSettings(false);
@@ -309,6 +308,18 @@ namespace Mining_Station
 
         } // end ViewModel constructor
 
+        public void WorkersPropertyEventsAdd()
+        {
+            Workers.PropertyChanging += Workers_PropertyChanging;
+            Workers.PropertyChanged += Workers_PropertyChanged;
+        }
+
+        public void WorkersPropertyEventsRemove()
+        {
+            Workers.PropertyChanging -= Workers_PropertyChanging;
+            Workers.PropertyChanged -= Workers_PropertyChanged;
+        }
+
         private void CancelWaitingCommand(object obj)
         {
             ScanLanCancelSource.Cancel();
@@ -357,7 +368,7 @@ namespace Mining_Station
 
         private void ApplyWtmSettingsAndSave()
         {
-            if(WtmSettings.AutoSwitch)
+            if (WtmSettings.AutoSwitch)
             {
                 ClearJob(JobType.Switch);
 
@@ -390,7 +401,7 @@ namespace Mining_Station
             Debug.WriteLine("111 WtmSettings_PropertyChanging " + e.PropertyName + " " + WtmSettings.SwitchTimeFrom.Hour + ":" + WtmSettings.SwitchTimeFrom.Minute + " " + WtmSettings.SwitchTimeTo.Hour + ":" + WtmSettings.SwitchTimeTo.Minute);
             Debug.WriteLine("111 SwitchTimeEdit " + WtmSettings.SwitchTimeEdit + " HistoryTimeEdit " + WtmSettings.HistoryTimeEdit);
 
-            if (e.PropertyName.Contains("SwitchTime") || e.PropertyName == "SwitchPeriodCount" 
+            if (e.PropertyName.Contains("SwitchTime") || e.PropertyName == "SwitchPeriodCount"
                 || e.PropertyName.Contains("HistoryTime") || e.PropertyName == "HistoricalAveragePeriod")
                 return;
 
@@ -423,7 +434,7 @@ namespace Mining_Station
 
                 if (WtmSettings.SwitchTimeEdit && SwitchTimeUpdateIsInProgress == false)
                 {
-                    Debug.WriteLine("!!! WtmSettings_PropertyChanged SaveUndoRedo" + " " + WtmSettings.SwitchTimeEdit + " Property: " + e.PropertyName );
+                    Debug.WriteLine("!!! WtmSettings_PropertyChanged SaveUndoRedo" + " " + WtmSettings.SwitchTimeEdit + " Property: " + e.PropertyName);
                     Debug.WriteLine("SwitchTimeUpdateIsInProgress: " + SwitchTimeUpdateIsInProgress + " SwitchTimeIsUpdated: " + SwitchTimeIsUpdated);
                     SaveUndoRedo("WtmSettings");
                     SwitchTimeUpdateIsInProgress = true;
@@ -503,9 +514,9 @@ namespace Mining_Station
             {
                 WtmSettings.ProxyPasswordEncrypted = WtmSettings.ProxyPassword.Encrypt();
             }
-            if (e.PropertyName == "Proxy" 
-                || e.PropertyName == "UseProxy" 
-                || e.PropertyName == "ProxyUserName" 
+            if (e.PropertyName == "Proxy"
+                || e.PropertyName == "UseProxy"
+                || e.PropertyName == "ProxyUserName"
                 || e.PropertyName == "ProxyPassword"
                 || e.PropertyName == "AnonymousProxy")
             {
@@ -575,7 +586,7 @@ namespace Mining_Station
                     SwitchManually.SetCanExecute(false);
                 }
             }
-                
+
             if (e.PropertyName == "CoinType")
             {
                 Helpers.MouseCursorWait();
@@ -632,7 +643,7 @@ namespace Mining_Station
                         }
                         catch (Exception ex)
                         {
-                            Debug.WriteLine($"{pc.Name} not responding. " + ex.Message);
+                            Debug.WriteLine($"{pc.Name} is not responding. " + ex.Message);
                             pc.OnlineStatus = Computer.OperationStatus.Failure;
                         }
                         finally
@@ -681,9 +692,9 @@ namespace Mining_Station
                 coinList.Add("Bitcoin");
 
             //Update Yahoo rates if necessary
-            if (WtmSettings.UseYahooRates 
-                && WtmSettings.DisplayCurrency != "USD" 
-                && WtmSettings.DisplayCurrency != "BTC" 
+            if (WtmSettings.UseYahooRates
+                && WtmSettings.DisplayCurrency != "USD"
+                && WtmSettings.DisplayCurrency != "BTC"
                 && WtmSettingsObject.DisplayCurrencyListDate.Date != DateTime.Today)
             {
                 await WtmSettings.GetYahooRates();
@@ -714,7 +725,7 @@ namespace Mining_Station
                 CalculateProfitCommandQuit();
                 return;
             }
-                
+
 
             var btc = wtmDataDict["Bitcoin"];
             string keyName;

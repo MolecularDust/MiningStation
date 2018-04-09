@@ -134,7 +134,9 @@ namespace Mining_Station
             {
                 await request.Stream.CopyToAsync(memoryStream);
                 var workers = NetHelper.DeserializeFromStream<Workers>(memoryStream);
+                ViewModel.Instance.WorkersPropertyEventsRemove();
                 ViewModel.Instance.Workers = workers.Clone();
+                ViewModel.Instance.WorkersPropertyEventsAdd();
                 Workers.SaveWorkers(workers);
                 var date = Workers.GetWorkersLastUpdateTime();
                 return new StreamUploadResponse { ResponseFlag = true, Date = date };
