@@ -1,5 +1,4 @@
-﻿
-<Window
+﻿<Window
     x:Class="Mining_Station.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +9,6 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"
     x:Name="TheMainWindow"
-    Title="Mining Station"
     Width="825"
     Height="650"
     Closed="TheMainWindow_Closed"

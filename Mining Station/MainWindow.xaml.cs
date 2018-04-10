@@ -20,6 +20,7 @@ namespace Mining_Station
         private System.Windows.Forms.NotifyIcon notifyIcon = new System.Windows.Forms.NotifyIcon() { Visible = true };
         public MainWindow()
         {
+            this.Title = Constants.AppName + " : " + Environment.MachineName;
             InitializeComponent();
             DataContext = new ViewModel();
 
@@ -34,7 +35,7 @@ namespace Mining_Station
 
             notifyIcon.ContextMenu = contextMenu;
             notifyIcon.Click += NotifyIcon_Click;
-                
+
         }
 
         // 'Exit' tray menu

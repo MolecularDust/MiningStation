@@ -11,10 +11,6 @@
     <local:MultiBindingParameterConverter x:Key="MultiBindingParameterConverter" />
     <local:StringToListConverter x:Key="StringToListConverter" />
     <local:MinutesCheckConverter x:Key="MinutesCheckConverter" />
-    <!--<local:AddConditionParameterConverter x:Key="AddConditionParameterConverter" />-->
-    <!--<local:SellButtonConverter x:Key="SellButtonConverter" />-->
-    <!--<local:BalanceConverter x:Key="BalanceConverter" />-->
-    <!--<local:BorderFirstConverter x:Key="BorderFirstConverter" />-->
     <local:ForegroundConverter x:Key="ForegroundConverter" />
     <local:CurrencyToStringFormatConverter x:Key="CurrencyToStringFormatConverter" />
     <local:ScheduledTimeConverted x:Key="ScheduledTimeConverted" />
@@ -26,9 +22,7 @@
     <local:ApplicationModeConverter x:Key="ApplicationModeConverter" />
     <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     <local:CoinStatusConverter x:Key="CoinStatusConverter" />
-    <!--<local:SelectedCoinColorConverter x:Key="SelectedCoinColorConverter"/>-->
     <local:ThisPcInfoConverter x:Key="ThisPcInfoConverter" />
-
     <local:TestConverter x:Key="TestConverter" />
 
     <SolidColorBrush x:Key="ButtonStroke" Color="#688CAF" />
