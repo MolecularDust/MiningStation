@@ -6,8 +6,10 @@
     xmlns:local="clr-namespace:Mining_Station"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="About"
+    x:Name="AboutWindow"
     SizeToContent="WidthAndHeight"
     WindowStartupLocation="CenterOwner"
+    PreviewKeyDown="AboutWindow_PreviewKeyDown"
     mc:Ignorable="d">
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
         <Grid.RowDefinitions>
@@ -15,6 +17,11 @@
             <RowDefinition />
             <RowDefinition Height="45" />
         </Grid.RowDefinitions>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Click="MenuItem_Click" Header="Copy To Clipboard (Ctrl+C)" />
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Border
             Grid.Row="0"
             Background="{StaticResource SingleCell}"
@@ -38,6 +45,7 @@
                 Grid.Column="0"
                 Margin="0,0,5,5"
                 HorizontalAlignment="Right"
+                x:Name="VersionTitle"
                 Text="Version:" />
             <TextBlock
                 x:Name="VersionText"
@@ -51,6 +59,7 @@
                 Grid.Column="0"
                 Margin="0,0,5,5"
                 HorizontalAlignment="Right"
+                x:Name="ApplicationModeTitle"
                 Text="Application Mode:" />
             <TextBlock
                 x:Name="ApplicationModeText"
@@ -64,6 +73,7 @@
                 Grid.Column="0"
                 Margin="0,0,5,0"
                 HorizontalAlignment="Right"
+                x:Name="MinedCoinTitle"
                 Text="Mined Coin:" />
             <TextBlock
                 x:Name="CoinText"
