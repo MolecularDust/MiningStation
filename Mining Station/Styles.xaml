@@ -23,6 +23,7 @@
     <local:InverseBoolConverter x:Key="InverseBoolConverter" />
     <local:CoinStatusConverter x:Key="CoinStatusConverter" />
     <local:ThisPcInfoConverter x:Key="ThisPcInfoConverter" />
+    <local:EmptyStringConverter x:Key="EmptyStringConverter" />
     <local:TestConverter x:Key="TestConverter" />
 
     <SolidColorBrush x:Key="ButtonStroke" Color="#688CAF" />

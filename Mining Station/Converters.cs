@@ -67,7 +67,7 @@ namespace Mining_Station
                     if (string.IsNullOrEmpty(coin))
                         return string.Empty;
                 }
-                catch 
+                catch
                 {
                     return string.Empty;
                 }
@@ -331,7 +331,7 @@ namespace Mining_Station
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var stringValue = (value as string) ;
+            var stringValue = (value as string);
             if (stringValue != null)
                 return stringValue?.TrimEnd('s');
             else return string.Empty;
@@ -430,7 +430,7 @@ namespace Mining_Station
             var symbol = values[1] as string;
             var algorithm = values[2] as string;
             var status = values[3] as string;
-            return new AlgoCoin { Name = name, Symbol = symbol, Algorithm = algorithm, Status = status};
+            return new AlgoCoin { Name = name, Symbol = symbol, Algorithm = algorithm, Status = status };
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
@@ -463,6 +463,20 @@ namespace Mining_Station
             var text = value as string;
             bool statusGood = text == null || text == string.Empty || string.Equals(text, "Active", StringComparison.InvariantCultureIgnoreCase);
             return statusGood ? true : false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value;
+        }
+    }
+
+    public class EmptyStringConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            var s = value as string;
+            return string.IsNullOrEmpty(s) ? "---" : s;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

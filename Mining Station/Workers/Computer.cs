@@ -76,7 +76,14 @@ namespace Mining_Station
             set { _currentCoinSymbol = value; OnPropertyChanged("CurrentCoinSymbol"); OnPropertyChanged("CurrentCoinNameAndSymbol"); }
         }
 
-        public string CurrentCoinNameAndSymbol { get { return $"{this.CurrentCoinName} ({this.CurrentCoinSymbol})"; } }
+        public string CurrentCoinNameAndSymbol
+        {
+            get
+            {
+                var str = $"{this.CurrentCoinName} ({this.CurrentCoinSymbol})";
+                return str.Equals(" ()") ? string.Empty : str;
+            }
+        }
 
         private string _newCoinName;
         public string NewCoinName

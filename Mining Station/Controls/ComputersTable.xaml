@@ -10,7 +10,6 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <local:DataGridTemplateConverter x:Key="DataGridTemplateConverter" />
-        <!--<local:CoinConverter x:Key="CoinConverter" />-->
     </UserControl.Resources>
     <Grid Background="{StaticResource SingleCell}">
         <DataGrid
@@ -69,13 +68,13 @@
                                                             <Style TargetType="TextBlock">
                                                                 <Style.Triggers>
                                                                     <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="Name">
-                                                                        <Setter Property="Text" Value="{Binding CurrentCoinName}" />
+                                                                        <Setter Property="Text" Value="{Binding CurrentCoinName, Converter={StaticResource EmptyStringConverter}}" />
                                                                     </DataTrigger>
                                                                     <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="SYMBOL">
-                                                                        <Setter Property="Text" Value="{Binding CurrentCoinSymbol}" />
+                                                                        <Setter Property="Text" Value="{Binding CurrentCoinSymbol, Converter={StaticResource EmptyStringConverter}}" />
                                                                     </DataTrigger>
                                                                     <DataTrigger Binding="{Binding ElementName=TheMainWindow, Path=DataContext.Workers.DisplayCoinAs}" Value="Name (SYMBOL)">
-                                                                        <Setter Property="Text" Value="{Binding CurrentCoinNameAndSymbol}" />
+                                                                        <Setter Property="Text" Value="{Binding CurrentCoinNameAndSymbol, Converter={StaticResource EmptyStringConverter}}" />
                                                                     </DataTrigger>
                                                                 </Style.Triggers>
                                                             </Style>
