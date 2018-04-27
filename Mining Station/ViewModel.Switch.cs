@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -35,7 +36,8 @@ namespace Mining_Station
 
                     if (worker.Query)
                     {
-                        var newTable = new ProfitTable {
+                        var newTable = new ProfitTable
+                        {
                             Name = worker.Name,
                             Index = i + 1,
                             ThisPC = Helpers.ListContainsThisPC(worker.Computers),
@@ -60,6 +62,11 @@ namespace Mining_Station
                         var first = newTable.ProfitList.FirstOrDefault();
                         if (first != null)
                             first.ManualSwitch = true;
+
+                        //Show the topmost coin as the new coin in Computers list
+                        newTable.HookPropertyChanched();
+                        newTable.Row_PropertyChanged(newTable.ProfitList.FirstOrDefault(), new PropertyChangedEventArgs("ManualSwitch"));
+
                         ProfitTables.Tables.Add(newTable);
                     }
                 }
@@ -82,7 +89,8 @@ namespace Mining_Station
             {
                 var selectedCoinRow = table.ProfitList.FirstOrDefault(x => x.ManualSwitch);
 
-                var newTable = new ProfitTable {
+                var newTable = new ProfitTable
+                {
                     Name = table.Name,
                     ProfitList = new List<ProfitTableRow> { selectedCoinRow },
                     Computers = new ObservableCollection<Computer>()
@@ -117,7 +125,8 @@ namespace Mining_Station
                         if (pc.Switch && currentlyMinedCoinRow != null && currentlyMinedCoinRow.ProfitDay > selectedCoinRow.ProfitDay)
                             lessProfitablePcLsit.Add((table.Name, pc.Name, fullName, selectedCoinRow.NameAndSymbol));
 
-                        var computer = new Computer {
+                        var computer = new Computer
+                        {
                             Name = pc.Name,
                             CurrentCoinName = pc.CurrentCoinName,
                             CurrentCoinSymbol = pc.CurrentCoinSymbol,
@@ -179,7 +188,7 @@ namespace Mining_Station
                 if (cnt != 0)
                 {
                     var paragraph = new Paragraph(new Run("The following selected coins have zero or negative profit:\r\n"));
-                    for (int i = 0; i < cnt; i++ )
+                    for (int i = 0; i < cnt; i++)
                     {
                         var entry = negativeProfitCoinLsit[i];
                         Run worker = new Run($"{entry.worker}: ");
@@ -189,7 +198,7 @@ namespace Mining_Station
                         if (i < cnt - 1)
                             paragraph.Inlines.Add("\r\n");
                     }
-                        
+
                     document.Blocks.Add(paragraph);
 
                 }
@@ -208,7 +217,7 @@ namespace Mining_Station
                         if (i < cnt - 1)
                             paragraph.Inlines.Add("\r\n");
                     }
-                        
+
                     document.Blocks.Add(paragraph);
                 }
                 cnt = lessProfitablePcLsit.Count;
@@ -223,10 +232,10 @@ namespace Mining_Station
                         worker.FontWeight = FontWeights.Bold;
                         paragraph.Inlines.Add(worker);
                         paragraph.Inlines.Add($"{entry.pc} is mining {entry.currentCoin} which is more profitable than {entry.switchCoin}.");
-                        if (i < cnt-1)
+                        if (i < cnt - 1)
                             paragraph.Inlines.Add("\r\n");
                     }
-                        
+
                     document.Blocks.Add(paragraph);
                 }
 
@@ -252,11 +261,11 @@ namespace Mining_Station
             var switchDialogResult = switchWindow.ShowDialog();
             if (vm.SwitchIsInProgress && vm.ManualSwitchCancelSource != null)
                 vm.ManualSwitchCancelSource.Cancel();
-            if(vm.SwitchIsInProgress || (vm.SwitchIsFinished && switchDialogResult == true))
+            if (vm.SwitchIsInProgress || (vm.SwitchIsFinished && switchDialogResult == true))
             {
                 ScanLanCommand(null);
             }
-                
+
             OnSwitchManuallyExit();
         }
 
@@ -398,8 +407,8 @@ namespace Mining_Station
                         if (!dataTimestampGood && !WtmSettings.QueryWtmOnLocalServerFail)
                         {
                             logFile.WriteLine("The server cache data is expired."
-                                + " Make sure that AutoSwitch on the client launches later than on the server." 
-                                + " For example, if AutoSwitch runs on a daily basis schedule AutoSwitch on the server to run at 9:00 and on the client machines at anyting between 10:00-23:59." 
+                                + " Make sure that AutoSwitch on the client launches later than on the server."
+                                + " For example, if AutoSwitch runs on a daily basis schedule AutoSwitch on the server to run at 9:00 and on the client machines at anyting between 10:00-23:59."
                                 + " This way the cache data obtained in the morning is valid for the rest of the day.");
                             return SwitchResult.Terminate;
                         }
@@ -440,7 +449,7 @@ namespace Mining_Station
                     if (WtmSettings.ApplicationMode == "Client")
                     {
                         //Needs longer timeout for the server might be downloading all coins from whattomine.com
-                        var channel = Service.NewStreamChannel(streamServerAddress, TimeSpan.FromSeconds(180)); 
+                        var channel = Service.NewStreamChannel(streamServerAddress, TimeSpan.FromSeconds(180));
 
                         try
                         {
@@ -791,7 +800,7 @@ namespace Mining_Station
 
         private DateTime GetSwitchExpiry(DateTime schedule)
         {
-            switch(WtmSettings.SwitchPeriod)
+            switch (WtmSettings.SwitchPeriod)
             {
                 case "Days":
                     return new DateTime(schedule.Year, schedule.Month, schedule.Day, 0, 0, 0).AddDays(1);
