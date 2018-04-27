@@ -222,7 +222,7 @@ namespace Mining_Station
         public static decimal StringToDecimal(string input)
         {
             decimal localValue = 0;
-            decimal.TryParse(input, NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out localValue);
+            decimal.TryParse(input, NumberStyles.AllowExponent | NumberStyles.AllowDecimalPoint | NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out localValue);
             return localValue;
         }
 
