@@ -66,14 +66,14 @@ namespace Mining_Station
         public string CurrentCoinName
         {
             get { return _currentCoinName; }
-            set { _currentCoinName = value; OnPropertyChanged("CurrentCoinName"); }
+            set { _currentCoinName = value; OnPropertyChanged("CurrentCoinName"); OnPropertyChanged("CurrentCoinNameAndSymbol"); }
         }
 
         private string _currentCoinSymbol;
         public string CurrentCoinSymbol
         {
             get { return _currentCoinSymbol; }
-            set { _currentCoinSymbol = value; OnPropertyChanged("CurrentCoinSymbol"); }
+            set { _currentCoinSymbol = value; OnPropertyChanged("CurrentCoinSymbol"); OnPropertyChanged("CurrentCoinNameAndSymbol"); }
         }
 
         public string CurrentCoinNameAndSymbol { get { return $"{this.CurrentCoinName} ({this.CurrentCoinSymbol})"; } }
@@ -152,11 +152,12 @@ namespace Mining_Station
 
         public TaskCompletionSource<bool> UpdateSuccessfull { get; set; }
 
-        public Computer() {}
+        public Computer() { }
 
         public Computer Clone()
         {
-            var _new = new Computer() {
+            var _new = new Computer()
+            {
                 Name = this.Name,
                 OnlineStatus = this.OnlineStatus,
                 CurrentCoinName = this.CurrentCoinName,
