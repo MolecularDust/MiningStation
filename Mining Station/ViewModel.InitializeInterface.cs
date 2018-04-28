@@ -78,7 +78,9 @@ namespace Mining_Station
             Func<Task> taskLoadYahooCurrencies = (async () =>
             {
                 //Load Yahoo currencies
+                SaveUndoIsEnabled = false;
                 await WtmSettings.GetYahooRates();
+                SaveUndoIsEnabled = true;
             });
 
             var tasks = new List<Task>() { taskLoadWtmCoins() };

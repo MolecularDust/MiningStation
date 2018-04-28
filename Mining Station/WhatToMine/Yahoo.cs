@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
@@ -33,8 +34,19 @@ namespace Mining_Station
                     foreach (var resource in resources)
                     {
                         var content = ((Dictionary<string, object>)resource)["resource"] as Dictionary<string, object>;
+                        if (content == null)
+                            continue;
                         var fields = content["fields"] as Dictionary<string, object>;
-                        var name = ((string)fields["symbol"]).Split('=')[0];
+                        if (fields == null)
+                            continue;
+                        object obj = null;
+                        fields.TryGetValue("symbol", out obj);
+                        if (obj == null)
+                            continue;
+                        string str = obj as string;
+                        if (str == null)
+                            continue;
+                        var name = str.Split('=')[0];
                         if (name == "USD")
                             continue;
                         var price = Convert.ToDecimal((string)fields["price"], CultureInfo.InvariantCulture);
@@ -45,7 +57,7 @@ namespace Mining_Station
                 {
                     return null;
                 }
-                return currencies;
+                return currencies.Count == 0 ? null : currencies;
             }
         }
     }
