@@ -151,6 +151,19 @@ namespace Mining_Station
             }
         }
 
+        private void NewWorkerCommand(object parameter)
+        {
+            var workerIndex = Workers.WorkerList.IndexOf((Worker)parameter);
+            Workers.WorkerIndex = workerIndex;
+            if (workerIndex != -1)
+            {
+                var index = workerIndex + 1;
+                if (index < Workers.WorkerList.Count)
+                    Workers.WorkerListInsert(index, Worker.DefaultWorker());
+                else Workers.WorkerListAdd(Worker.DefaultWorker());
+            }
+        }
+
         private void AddCoinTableCommand(object parameter)
         {
             Debug.WriteLine("+ Add coin table clicked");

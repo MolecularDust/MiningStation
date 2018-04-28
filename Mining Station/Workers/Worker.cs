@@ -97,6 +97,24 @@ namespace Mining_Station
             //CollectionChangedEventManager.AddHandler(this.CoinList, CoinList_CollectionChanged);
         }
 
+        public static Worker DefaultWorker()
+        {
+            return new Worker
+            {
+                Name = "Worker_Name",
+                Description = "Worker Description",
+                Computers = new ObservableCollection<string> { "Computer_Name_1", "Computer_Name_2" },
+                CoinList = new ObservableCollection<CoinTable> {
+                            new CoinTable { Coins = new ObservableCollection<Coin> {
+                                new Coin { Name = "Ethereum", Symbol = "ETH", Algorithm = "Ethash", Hashrate = 100} },
+                                Power = 750, Fees = 1, Switch = false, Path = @"C:\Path\To\miner.bat", Arguments = "", Notes = "Some notes on the single coin." },
+                            new CoinTable { Coins = new ObservableCollection<Coin> {
+                                new Coin { Name = "Ethereum", Symbol = "ETH", Algorithm = "Ethash", Hashrate = 99}, new Coin { Name = "Pascalcoin", Symbol = "PASC", Algorithm = "Pascal", Hashrate = 999 } },
+                                Power = 800, Fees = 2, Switch = false, Path = @"C:\Path\To\miner.exe", Arguments = "-arguments -if -any", Notes = "Some notes on the dual coin." }
+                        }
+            };
+        }
+
         public void CoinTableInsert(int index, CoinTable coinTable)
         {
             OnPropertyChanging("CoinList");

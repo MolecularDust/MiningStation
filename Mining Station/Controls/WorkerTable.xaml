@@ -562,6 +562,10 @@
                         Command="{Binding PlacementTarget.Tag.AddWorker, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
                         CommandParameter="{Binding}"
                         Header="Duplicate" />
+                    <MenuItem
+                        Command="{Binding PlacementTarget.Tag.NewWorker, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                        CommandParameter="{Binding}"
+                        Header="New Worker" />
                 </ContextMenu>
             </TextBlock.ContextMenu>
             <i:Interaction.Behaviors>

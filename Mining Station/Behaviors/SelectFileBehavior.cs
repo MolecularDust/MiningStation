@@ -82,7 +82,7 @@ namespace Mining_Station
             }
 
             var column = dataGrid.CurrentColumn;
-            Debug.WriteLine($"AssociatedObject_Loaded {column.Header}");
+            Debug.WriteLine($"AssociatedObject_Loaded {column?.Header}");
             if (column != null && column.Header.ToString() == "Path")
             {
 
