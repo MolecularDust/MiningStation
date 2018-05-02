@@ -127,7 +127,7 @@ namespace Mining_Station
                     if (this.IsChecked == false)
                         this.IsChecked = true;
                 }
-                    
+
                 else this.IsChecked = false;
                 IsCheckedBypass = false;
             }
@@ -259,7 +259,7 @@ namespace Mining_Station
 
         private void ProcessCommand(object obj)
         {
-            
+
         }
 
         public async Task<ObservableCollection<Algorithm>> GetWtmData(CancellationToken token = default(CancellationToken))
@@ -300,10 +300,11 @@ namespace Mining_Station
                     sortedByAlgo.Add(newAlgo);
                 }
             }
+            sortedByAlgo = new ObservableCollection<Algorithm>(sortedByAlgo.OrderBy(x => x.Name));
             return sortedByAlgo;
         }
 
-        public void ShowActiveCoins (bool showActiveCoinsOnly)
+        public void ShowActiveCoins(bool showActiveCoinsOnly)
         {
             foreach (var algo in Algorithms)
             {
