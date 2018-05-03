@@ -53,6 +53,8 @@ namespace Mining_Station
         [ScriptIgnore]
         public int WorkerIndex { get; set; }
         [ScriptIgnore]
+        public int WorkerCount { get; set; }
+        [ScriptIgnore]
         public int WorkerNewIndex { get; set; }
 
         public Workers() { }
@@ -240,6 +242,25 @@ namespace Mining_Station
             this.WorkerList.Add(worker);
         }
 
+        public void WorkerListAddRangeAt(IList<Worker> workers, int index)
+        {
+            this.WorkerIndex = index + 1;
+            this.WorkerCount = workers.Count;
+            OnPropertyChanging("WorkerAddRange");
+            if (index < this.WorkerList.Count)
+            {
+                for (int i = 0; i < workers.Count; i++)
+                {
+                    this.WorkerList.Insert(index + 1 + i, workers[i].Clone());
+                }
+            }
+            else
+            {
+                foreach (var worker in workers)
+                    this.WorkerList.Add(worker.Clone());
+            }
+        }
+
         public void WorkerListInsert(int index, Worker worker)
         {
             this.WorkerIndex = index;
@@ -252,6 +273,15 @@ namespace Mining_Station
             this.WorkerIndex = index;
             OnPropertyChanging("WorkerRemove");
             this.WorkerList.RemoveAt(index);
+        }
+
+        public void WorkerListRemoveRangeAt(int index, int count)
+        {
+            this.WorkerIndex = index - 1;
+            this.WorkerCount = count;
+            OnPropertyChanging("WorkerRemoveRange");
+            for (int i = 0; i < count; i++)
+                this.WorkerList.RemoveAt(index);
         }
 
         public void WorkerListMove(int workerOldIndex, int workerNewIndex)

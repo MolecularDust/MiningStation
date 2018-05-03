@@ -153,6 +153,8 @@ namespace Mining_Station
         public RelayCommandLight AddWorker { get; private set; }
         public RelayCommandLight DeleteWorker { get; private set; }
         public RelayCommandLight NewWorker { get; private set; }
+        public RelayCommandLight ExportWorkers { get; private set; }
+        public RelayCommandLight ImportWorkers { get; private set; }
         public RelayCommandLight AddCoinTable { get; private set; }
         public RelayCommandLight DeleteCoinTable { get; private set; }
         public RelayCommandLight MoveCoinTable { get; private set; }
@@ -258,6 +260,8 @@ namespace Mining_Station
             AddWorker = new RelayCommandLight(AddWorkerCommand);
             DeleteWorker = new RelayCommandLight(DeleteWorkerCommand);
             NewWorker = new RelayCommandLight(NewWorkerCommand);
+            ExportWorkers = new RelayCommandLight(ExportWorkersCommand);
+            ImportWorkers = new RelayCommandLight(ImportWorkersCommand);
             MoveWorker = new RelayCommandLight(MoveWorkerCommand);
             CopyWorker = new RelayCommandLight(CopyWorkerCommand);
             MoveWorkerDown = new RelayCommandLight(MoveWorkerDownCommand);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ namespace Mining_Station
         {
             UndoObject undoObject = null;
             var index = Workers.WorkerIndex;
+            int count = Workers.WorkerCount;
+
             switch (propertyName)
             {
                 case "WorkersPowerCost":
@@ -32,11 +35,20 @@ namespace Mining_Station
                 case "WorkerAdd":
                     undoObject = new UndoObject(UndoOperationType.WorkerAdd, -1, null);
                     break;
+                case "WorkerAddRange":
+                    undoObject = new UndoObject(UndoOperationType.WorkerAddRange, index, count);
+                    break;
                 case "WorkerInsert":
                     undoObject = new UndoObject(UndoOperationType.WorkerInsert, index, Workers.WorkerList[index].CloneNoEvents());
                     break;
                 case "WorkerRemove":
                     undoObject = new UndoObject(UndoOperationType.WorkerRemove, index, Workers.WorkerList[index].CloneNoEvents());
+                    break;
+                case "WorkerRemoveRange":
+                    var newWorkerList = new ObservableCollection<Worker>();
+                    for (int i = 0; i < count; i++)
+                        newWorkerList.Add(Workers.WorkerList[index + i + 1].CloneNoEvents());
+                    undoObject = new UndoObject(UndoOperationType.WorkerRemoveRange, index, newWorkerList);
                     break;
                 case "WorkerMove":
                     undoObject = new UndoObject(UndoOperationType.WorkerMove, index, Workers.WorkerNewIndex);
@@ -67,11 +79,17 @@ namespace Mining_Station
                 case UndoOperationType.WorkerAdd:
                     Workers.WorkerListRemoveAt(Workers.WorkerList.Count - 1);
                     break;
+                case UndoOperationType.WorkerAddRange:
+                    Workers.WorkerListRemoveRangeAt(undoObject.Index, (int)undoObject.Data);
+                    break;
                 case UndoOperationType.WorkerInsert:
                     Workers.WorkerListRemoveAt(undoObject.Index);
                     break;
                 case UndoOperationType.WorkerRemove:
                     Workers.WorkerListInsert(undoObject.Index, ((Worker)undoObject.Data).Clone());
+                    break;
+                case UndoOperationType.WorkerRemoveRange:
+                    Workers.WorkerListAddRangeAt((ObservableCollection<Worker>)undoObject.Data, undoObject.Index);
                     break;
                 case UndoOperationType.WorkerMove:
                     Workers.WorkerListMove((int)undoObject.Data, undoObject.Index);

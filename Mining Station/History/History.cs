@@ -10,8 +10,10 @@ namespace Mining_Station
         {
             WorkerEdit,
             WorkerAdd,
+            WorkerAddRange,
             WorkerInsert,
             WorkerRemove,
+            WorkerRemoveRange,
             WorkerMove,
             WorkersPowerCost,
             WorkersCoinType,
@@ -25,9 +27,9 @@ namespace Mining_Station
             public int Index { get; set; }
             public int Shift { get; set; }
             public object Data { get; set; }
-        
 
-            public UndoObject(UndoOperationType operationType, int index, object data )
+
+            public UndoObject(UndoOperationType operationType, int index, object data)
             {
                 this.OperationType = operationType;
                 this.Index = index;

@@ -153,6 +153,9 @@
       <DependentUpon>EditableCell.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controls\ExportImportWorkers.xaml.cs">
+      <DependentUpon>ExportImportWorkers.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MassUpdate.xaml.cs">
       <DependentUpon>MassUpdate.xaml</DependentUpon>
     </Compile>
@@ -277,6 +280,10 @@
     <Page Include="Controls\EditKillListDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\ExportImportWorkers.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\MassUpdate.xaml">
       <SubType>Designer</SubType>

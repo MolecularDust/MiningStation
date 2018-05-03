@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -162,6 +164,112 @@ namespace Mining_Station
                     Workers.WorkerListInsert(index, Worker.DefaultWorker());
                 else Workers.WorkerListAdd(Worker.DefaultWorker());
             }
+        }
+
+        private async void ExportWorkersCommand(object parameter)
+        {
+            var window = new ExportImportWorkers();
+            var vm = new ExportImportWorkersVM();
+            vm.Workers = Workers.WorkerList;
+
+            //Store current Query data and reset Query checkmarks
+            bool[] queries = new bool[Workers.WorkerList.Count];
+            for (int i = 0; i < Workers.WorkerList.Count; i++)
+            {
+                queries[i] = Workers.WorkerList[i].Query;
+                Workers.WorkerList[i].Query = false;
+            }
+
+            Action restoreQueries = () => {
+                for (int i = 0; i < queries.Length; i++)
+                    Workers.WorkerList[i].Query = queries[i];
+            };
+
+            window.DataContext = vm;
+            window.Title = "Export Workers";
+            window.HeaderText.Text = "Select Workers";
+            var dialogResult = window.ShowDialog();
+            if (dialogResult == false)
+            {
+                restoreQueries();
+                return;
+            }
+
+            var workersToSave = Workers.WorkerList.Where(x => x.Query).ToList();
+            if (workersToSave == null || workersToSave.Count == 0)
+            {
+                restoreQueries();
+                return;
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "JSON file|*.json";
+            saveFileDialog.OverwritePrompt = true;
+            var saveDialogResult = saveFileDialog.ShowDialog();
+            if (saveDialogResult == false)
+            {
+                restoreQueries();
+                return;
+            }
+
+            var json = JsonConverter.ConvertToJson(workersToSave);
+            if (json == null)
+            {
+                await Task.Delay(100);
+                MessageBox.Show("Failed to convert selected workers to JSON format", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                restoreQueries();
+                return;
+            }
+            string jsonFormatted = JsonConverter.FormatJson(json);
+            Helpers.WriteToTxtFile(saveFileDialog.FileName, jsonFormatted);
+            restoreQueries();
+        }
+
+        private async void ImportWorkersCommand(object parameter)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "JSON file|*.json";
+            var openFileDialogResult = openFileDialog.ShowDialog();
+            if (openFileDialogResult == false || string.IsNullOrEmpty(openFileDialog.FileName))
+                return;
+
+            string workersContent = null;
+            ObservableCollection<Worker> convertedWorkers = null;
+            try { workersContent = System.IO.File.ReadAllText(openFileDialog.FileName); }
+            catch
+            {
+                await Task.Delay(100);
+                MessageBox.Show($"There was an error while reading from \"{openFileDialog.FileName}\"", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            convertedWorkers = JsonConverter.ConvertFromJson<ObservableCollection<Worker>>(workersContent, false);
+            if (convertedWorkers == null || convertedWorkers.Count == 0)
+            {
+                await Task.Delay(100);
+                Helpers.ShowErrorMessage($"Failed to intepret JSON information from \"{openFileDialog.FileName}\"", "Error");
+                return;
+            }
+
+            var window = new ExportImportWorkers();
+            var vm = new ExportImportWorkersVM();
+            vm.Workers = convertedWorkers;
+            foreach (var worker in vm.Workers)
+                worker.Query = true;
+            window.DataContext = vm;
+            window.Title = "Import Workers";
+            window.HeaderText.Text = "Select Workers";
+            var dialogResult = window.ShowDialog();
+            if (dialogResult == false)
+            {
+                return;
+            }
+
+            var selectedWorkers = vm.Workers.Where(x => x.Query).ToList();
+            if (selectedWorkers == null || selectedWorkers.Count == 0)
+                return;
+
+            var workerIndex = Workers.WorkerList.IndexOf((Worker)parameter);
+            Workers.WorkerListAddRangeAt(selectedWorkers, workerIndex);
         }
 
         private void AddCoinTableCommand(object parameter)
