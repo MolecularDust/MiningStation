@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -51,6 +52,7 @@ namespace Mining_Station
 
     public class ExportImportWorkersVM : NotifyObject
     {
+        public string Title { get; set; }
         public ObservableCollection<Worker> Workers { get; set; }
         public RelayCommand Ok { get; private set; }
 
@@ -67,7 +69,23 @@ namespace Mining_Station
 
         private void OkCommand(object obj)
         {
-            
+
+        }
+    }
+
+    public class TitleConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string str = value as string;
+            if (str == null)
+                str = "Export / Import";
+            return str + " Workers";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

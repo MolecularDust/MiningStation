@@ -8,6 +8,12 @@
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
         mc:Ignorable="d">
+    <Window.Resources>
+        <local:TitleConverter x:Key="TitleConverter" />
+    </Window.Resources>
+    <Window.Title>
+        <Binding Path="Title" Converter="{StaticResource TitleConverter}"/>
+    </Window.Title>
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -21,6 +27,7 @@
             BorderThickness="0,0,0,0.75">
             <TextBlock
                 x:Name="HeaderText"
+                Text="Select Workers"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 FontWeight="SemiBold" />
@@ -62,7 +69,7 @@
                     Margin="0,0,10,0"
                     Click="ButtonOk_Click"
                     Command="{Binding Ok}"
-                    Content="OK"
+                    Content="{Binding Title}"
                     IsDefault="True" />
                 <Button
                     x:Name="ButtonCancel"

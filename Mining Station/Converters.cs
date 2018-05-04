@@ -206,70 +206,6 @@ namespace Mining_Station
         }
     }
 
-    //public class AddConditionParameterConverter : IMultiValueConverter
-    //{
-    //    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        return values.ToArray();
-    //    }
-
-    //    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-    //public class SellButtonConverter : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        var balance = value as KeyValueEditablePair<string, PoloniexBalance>;
-    //        if (balance == null || balance.Value.AvailableMarkets == null || balance.Value.AvailableMarkets.Count == 0 || balance.Value.Balance <= 0)
-    //            return false;
-    //        return true;
-    //    }
-
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-    //public class BalanceConverter : IValueConverter
-    //{
-    //    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        if ((decimal)value == -1)
-    //            return "???";
-    //        return value;
-    //    }
-
-    //    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        return value;
-    //    }
-    //}
-
-    //public class BorderFirstConverter : IMultiValueConverter
-    //{
-    //    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        var collection = values[0] as ObservableCollection<SellCondition>;
-    //        if (collection == null)
-    //            return false;
-    //        var first = collection.FirstOrDefault();
-    //        var condition = values[1] as SellCondition;
-    //        if (first != null && first == condition)
-    //            return true;
-    //        else return false;
-    //    }
-
-    //    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
     public class ForegroundConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -440,21 +376,6 @@ namespace Mining_Station
             return new object[] { coin.Name, coin.Symbol, coin.Algorithm, coin.Status };
         }
     }
-
-    //public class SelectedCoinColorConverter : IMultiValueConverter
-    //{
-    //    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    //    {
-    //        string name = values[0] as string;
-    //        List<AlgoCoin> coins = values[1] as List<AlgoCoin>;
-    //        string status = 
-    //    }
-
-    //    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
 
     public class CoinStatusConverter : IValueConverter
     {

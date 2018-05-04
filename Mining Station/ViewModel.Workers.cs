@@ -186,8 +186,7 @@ namespace Mining_Station
             };
 
             window.DataContext = vm;
-            window.Title = "Export Workers";
-            window.HeaderText.Text = "Select Workers";
+            vm.Title = "Export";
             var dialogResult = window.ShowDialog();
             if (dialogResult == false)
             {
@@ -256,8 +255,7 @@ namespace Mining_Station
             foreach (var worker in vm.Workers)
                 worker.Query = true;
             window.DataContext = vm;
-            window.Title = "Import Workers";
-            window.HeaderText.Text = "Select Workers";
+            vm.Title = "Import";
             var dialogResult = window.ShowDialog();
             if (dialogResult == false)
             {
