@@ -221,6 +221,7 @@
                             <DataGrid.ContextMenu>
                                 <ContextMenu x:Name="DataGridCoinsContextMenu">
                                     <i:Interaction.Behaviors>
+                                        <local:HashrateMultiplierBehavior Command="{Binding PlacementTarget.Tag.MultiplyHashrate, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                         <local:SelectFileBehavior EditPath="{Binding PlacementTarget.Tag.EditPath, RelativeSource={RelativeSource AncestorType=ContextMenu}}" 
                                                                   OpenInExplorer="{Binding PlacementTarget.Tag.OpenInExplorer, RelativeSource={RelativeSource AncestorType=ContextMenu}}"/>
                                         <local:ShowColumnsMenuBehavior />

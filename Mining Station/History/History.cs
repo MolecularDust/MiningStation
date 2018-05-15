@@ -18,6 +18,7 @@ namespace Mining_Station
             WorkersPowerCost,
             WorkersCoinType,
             WorkersDisplayCoinAs,
+            WorkersAll,
             SettingsEdit,
         }
 

@@ -129,6 +129,7 @@
     </ApplicationDefinition>
     <Compile Include="Behaviors\CoinColumnResizeBehavior.cs" />
     <Compile Include="Behaviors\DisplayCoinAsMenuBehavior.cs" />
+    <Compile Include="Behaviors\HashrateMultiplierBehavior.cs" />
     <Compile Include="Behaviors\SelectFileBehavior.cs" />
     <Compile Include="Behaviors\ShowColumnsMenuBehavior.cs" />
     <Compile Include="Behaviors\TextBlockBindableInlinesBehavior.cs" />
@@ -155,6 +156,9 @@
     </Compile>
     <Compile Include="Controls\ExportImportWorkers.xaml.cs">
       <DependentUpon>ExportImportWorkers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HashrateMultiplier.xaml.cs">
+      <DependentUpon>HashrateMultiplier.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MassUpdate.xaml.cs">
       <DependentUpon>MassUpdate.xaml</DependentUpon>
@@ -282,6 +286,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ExportImportWorkers.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\HashrateMultiplier.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

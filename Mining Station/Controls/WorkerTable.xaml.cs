@@ -89,7 +89,7 @@ namespace Mining_Station
             var dg = sender as DataGrid;
             if (dg == null)
                 return;
-            
+            dg.SelectedItem = cell.DataContext;
             Debug.WriteLine($"DataGridCoins_PreviewMouseRightButtonDown {dg.CurrentColumn?.Header.ToString()}");
         }
     }

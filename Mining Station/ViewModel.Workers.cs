@@ -166,6 +166,48 @@ namespace Mining_Station
             }
         }
 
+        private void MultiplyHashrateCommand(object parameter)
+        {
+            var ct = parameter as CoinTable;
+            if (ct == null)
+                return;
+            var window = new HashrateMultiplier();
+            var vm = new HashrateMultiplierVM(ct.Coins, Workers.DisplayCoinAs);
+            window.DataContext = vm;
+            var dialogresult = window.ShowDialog();
+            if (dialogresult == false)
+                return;
+            SaveUndoRedo("WorkersAll");
+            SaveUndoIsEnabled = false;
+            foreach (var worker in Workers.WorkerList)
+            {
+                foreach (var coinTable in worker.CoinList)
+                {
+                    foreach (var coin in coinTable.Coins)
+                    {
+                        foreach (var coinPlus in vm.Coins)
+                        {
+                            if (coinPlus.Coin.Name != coin.Name || coinPlus.Multiplier == 1)
+                                continue;
+                            switch (coinPlus.Operation)
+                            {
+                                case "*":
+                                    coin.Hashrate *= coinPlus.Multiplier;
+                                    break;
+                                case "/":
+                                    coin.Hashrate /= coinPlus.Multiplier;
+                                    break;
+                            }
+                            var i = HashrateMultiplierVM.RoundConverter(coinPlus.Rounding);
+                            if (i >= 0)
+                                coin.Hashrate = Math.Round(coin.Hashrate, i);
+                        }
+                    }
+                }
+            }
+            SaveUndoIsEnabled = true;
+        }
+
         private async void ExportWorkersCommand(object parameter)
         {
             var window = new ExportImportWorkers();

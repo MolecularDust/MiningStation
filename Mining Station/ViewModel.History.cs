@@ -56,6 +56,12 @@ namespace Mining_Station
                 case "WtmSettings":
                     undoObject = new UndoObject(UndoOperationType.SettingsEdit, -1, WtmSettings.Clone());
                     break;
+                case "WorkersAll":
+                    var newAllWorkers = new ObservableCollection<Worker>();
+                    foreach (var worker in Workers.WorkerList)
+                        newAllWorkers.Add(worker.CloneNoEvents());
+                    undoObject = new UndoObject(UndoOperationType.WorkersAll, -1, newAllWorkers);
+                    break;
             }
             return undoObject;
         }
@@ -110,6 +116,13 @@ namespace Mining_Station
                     if (WtmSettings.BackupHistoricalPrices)
                         HistoryTimeIsUpdated = false;
                     WtmSettings.ServerSettingsAreUpdated = true;
+                    break;
+                case UndoOperationType.WorkersAll:
+                    SaveUndoRedo("WorkersAll");
+                    var allWorkers = undoObject.Data as ObservableCollection<Worker>;
+                    Workers.WorkerList.Clear();
+                    foreach (var worker in allWorkers)
+                        Workers.WorkerList.Add(worker.Clone());
                     break;
             }
         }
