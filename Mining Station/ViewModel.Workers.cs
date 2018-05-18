@@ -450,5 +450,47 @@ namespace Mining_Station
                 Process.Start("explorer.exe", argument);
             }
         }
+
+        private void SortByCommand(object obj)
+        {
+            var t = obj as Tuple<object, object, string>;
+            if (t == null)
+                return;
+            var column = t.Item1 as string;
+            var worker = t.Item2 as Worker;
+            var secondSortBy = t.Item3;
+            if (column == null || worker == null)
+                return;
+
+            Func<string, string> mapProperty = (string key) => {
+                switch (key)
+                {
+                    case "Coin": return "FullName";
+                    case "Coin Name": return "FullName";
+                    case "Coin Symbol": return "FullSymbol";
+                    case "Hashrate": return "FullHashrate";
+                    case "Algorithm": return "FullAlgorithm";
+                    default: return key;
+                }
+            };
+
+            var propertyName = mapProperty(column);
+            var secondaryPropertyName = mapProperty(secondSortBy);
+            var newCoinList = new ObservableCollection<CoinTable>();
+            IOrderedEnumerable<CoinTable> sorted = null;
+            if (secondaryPropertyName != null)
+            {
+                sorted = worker.CoinList.OrderBy(x => x.GetType().GetProperty(propertyName).GetValue(x, null)).ThenBy(y => y.GetType().GetProperty(secondaryPropertyName).GetValue(y, null));
+            }
+            else
+            {
+                sorted = worker.CoinList.OrderBy(x => x.GetType().GetProperty(propertyName).GetValue(x, null));
+            }
+            foreach (var item in sorted)
+                newCoinList.Add(item.Clone());
+            worker.RaiseProperychanging("CoinList");
+            worker.CoinList = newCoinList;
+            worker.RaiseProperychanged("CoinList");
+        }
     }
 }

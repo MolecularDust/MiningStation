@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Interactivity;
 
 namespace Mining_Station
@@ -12,6 +13,19 @@ namespace Mining_Station
     public class ShowColumnsMenuBehavior : Behavior<ContextMenu>
     {
         MenuItem ShowColumns;
+        MenuItem SortByMenu;
+        MenuItem SecondarySortByMenu;
+        string SecondarySortByParameter;
+
+        public ICommand SortBy
+        {
+            get { return (ICommand)GetValue(SortByProperty); }
+            set { SetValue(SortByProperty, value); }
+        }
+
+        public static readonly DependencyProperty SortByProperty =
+            DependencyProperty.Register("SortBy", typeof(ICommand), typeof(ShowColumnsMenuBehavior), new PropertyMetadata(null));
+
 
         protected override void OnAttached()
         {
@@ -27,22 +41,89 @@ namespace Mining_Station
             if (dataGrid == null) return;
 
             ShowColumns = new MenuItem { Header = "Show Columns" };
-            foreach (var column in dataGrid.Columns)
+            SortByMenu = new MenuItem { Header = "Sort By" };
+            SecondarySortByMenu = new MenuItem { Header = "Secondary Sort By" };
+
+            for (int i = 0; i < dataGrid.Columns.Count; i++)
             {
+                var column = dataGrid.Columns[i];
                 if (column.Header == null)
                     continue;
-                var menuItem = new MenuItem();
-                menuItem.Header = column.Header;
-                menuItem.IsChecked = column.Visibility == Visibility.Visible ? true : false;
-                menuItem.IsCheckable = true;
-                menuItem.Checked += MenuItem_Checked;
-                menuItem.Unchecked += MenuItem_Checked;
-                ShowColumns.Items.Add(menuItem);
+                var showMenuItem = new MenuItem();
+                showMenuItem.Header = column.Header;
+                showMenuItem.IsChecked = column.Visibility == Visibility.Visible ? true : false;
+                showMenuItem.IsCheckable = true;
+                showMenuItem.Checked += ShowMenuItem_Checked;
+                showMenuItem.Unchecked += ShowMenuItem_Checked;
+                ShowColumns.Items.Add(showMenuItem);
+
+                if (i == 0)
+                {
+                    foreach (var entry in new string[] { "Coin Name", "Coin Symbol" })
+                    {
+                        SortByMenuAdd(entry);
+                        SecondarySortByMenuAdd(entry);
+                    }
+                }
+                else
+                {
+                    SortByMenuAdd(column.Header.ToString());
+                    SecondarySortByMenuAdd(column.Header.ToString());
+                }
             }
             this.AssociatedObject.Items.Add(ShowColumns);
+            SortByMenu.Items.Add(SecondarySortByMenu);
+            this.AssociatedObject.Items.Add(SortByMenu);
         }
 
-        private void MenuItem_Checked(object sender, RoutedEventArgs e)
+        private void SortByMenuAdd(string menuHeader)
+        {
+            var sortMenuItem = new MenuItem();
+            sortMenuItem.Header = menuHeader;
+            sortMenuItem.Click += SortMenuItem_Click;
+            SortByMenu.Items.Add(sortMenuItem);
+        }
+
+        private void SecondarySortByMenuAdd(string menuHeader)
+        {
+            var secondaryItem = new MenuItem
+            {
+                Header = menuHeader,
+                IsCheckable = true,
+                IsChecked = false,
+                StaysOpenOnClick = true
+            };
+            secondaryItem.Click += SecondaryItem_Clicked;
+            SecondarySortByMenu.Items.Add(secondaryItem);
+        }
+
+        private void SecondaryItem_Clicked(object sender, RoutedEventArgs e)
+        {
+            var clickedItem = sender as MenuItem;
+            if (clickedItem == null)
+                return;
+            SecondarySortByParameter = clickedItem.IsChecked ? clickedItem.Header.ToString() : null;
+            foreach (var item in SecondarySortByMenu.Items)
+            {
+                var mi = item as MenuItem;
+                if (mi == null)
+                    continue;
+                if (mi.Header != clickedItem.Header)
+                    mi.IsChecked = false;
+            }
+        }
+
+        private void SortMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var menuItem = sender as MenuItem;
+            var dg = AssociatedObject.PlacementTarget as DataGrid;
+            if (menuItem == null || SortBy == null || dg == null)
+                return;
+
+            SortBy.Execute(new Tuple<object, object, string>(menuItem.Header, dg.DataContext, SecondarySortByParameter));
+        }
+
+        private void ShowMenuItem_Checked(object sender, RoutedEventArgs e)
         {
             var menuItem = sender as MenuItem;
             if (menuItem == null) return;

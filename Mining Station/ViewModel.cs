@@ -191,6 +191,7 @@ namespace Mining_Station
         public RelayCommandLight CancelWaiting { get; private set; }
         public RelayCommandLight EditPath { get; private set; }
         public RelayCommandLight OpenInExplorer { get; private set; }
+        public RelayCommandLight SortBy { get; private set; }
 
         public RelayCommandLight WorkersExpandAll { get; private set; }
         public RelayCommandLight WorkersCollapseAll { get; private set; }
@@ -302,6 +303,7 @@ namespace Mining_Station
             CancelWaiting = new RelayCommandLight(CancelWaitingCommand);
             EditPath = new RelayCommandLight(EditPathCommand);
             OpenInExplorer = new RelayCommandLight(OpenInExplorerCommand);
+            SortBy = new RelayCommandLight(SortByCommand);
 
             WorkersExpandAll = new RelayCommandLight(WorkersExpandAllCommand);
             WorkersCollapseAll = new RelayCommandLight(WorkersCollapseAllCommand);
@@ -317,6 +319,7 @@ namespace Mining_Station
             Instance = this;
 
         } // end ViewModel constructor
+
 
         public void WorkersPropertyEventsAdd()
         {
