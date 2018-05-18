@@ -79,7 +79,7 @@ namespace Mining_Station
             set { _displayCoinAs = value; OnPropertyChanged("DisplayCoinAs"); }
         }
 
-        public SwitchWindowVM() {}
+        public SwitchWindowVM() { }
 
         public SwitchWindowVM(ObservableCollection<ProfitTable> profitTables)
         {
@@ -176,10 +176,10 @@ namespace Mining_Station
                                     if (pc.Switch)
                                     {
                                         bool switchResult = await channel.SetCurrentCoinAsync(
-                                            currentCoinRow.Name, 
-                                            currentCoinRow.Symbol, 
-                                            currentCoinRow.Algorithm, 
-                                            currentCoinRow.Path, 
+                                            currentCoinRow.Name,
+                                            currentCoinRow.Symbol,
+                                            currentCoinRow.Algorithm,
+                                            currentCoinRow.Path,
                                             currentCoinRow.Arguments).WithCancellation(token);
                                         if (switchResult)
                                         {
@@ -257,7 +257,7 @@ namespace Mining_Station
 
             await Task.WhenAll(taskList);
 
-            if (errorCount ==0)
+            if (errorCount == 0)
             {
                 ReportTitle = "Report:";
                 NewParagraph = new Paragraph(new Run("Operation has finished successfully."));

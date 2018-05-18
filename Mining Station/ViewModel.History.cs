@@ -127,7 +127,7 @@ namespace Mining_Station
             }
         }
 
-        private void SaveUndoRedo(string name)
+        public void SaveUndoRedo(string name)
         {
             if (!SaveUndoIsEnabled)
                 return;

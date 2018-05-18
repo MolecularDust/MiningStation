@@ -150,6 +150,7 @@
                             <MenuItem Command="{Binding MassUpdateWtmSettings}" Header="Update Settings" />
                         </MenuItem>
                         <MenuItem Command="{Binding AddCoinsByAlgorithm}" Header="Add Coins By Algorithm" />
+                        <MenuItem Command="{Binding UpdateCoins}" Header="Update Coins In Workers"/>
                         <MenuItem Command="{Binding About}" Header="About" />
                         <MenuItem Command="{Binding Exit}" Header="Exit (Alt-F4)" />
                     </MenuItem>

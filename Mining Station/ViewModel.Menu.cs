@@ -48,7 +48,7 @@ namespace Mining_Station
 
         private void AddCoinsByAlgorithmCommand(object obj)
         {
-            var algoSelector= new AlgorithmSelector();
+            var algoSelector = new AlgorithmSelector();
             var vm = new AlgorithmSelectorVM();
             vm.DisplayCoinAs = Workers.DisplayCoinAs;
             algoSelector.DataContext = vm;
@@ -81,15 +81,26 @@ namespace Mining_Station
                         worker.CoinList.Add(ct.Clone());
                     worker.RaiseProperychanged("CoinList");
                 }
-                    
             }
             if (vm.Option == AlgorithmSelectorVM.WorkerOptions.AddToNew)
             {
-                var worker = new Worker("NEW WORKER","",new ObservableCollection<string>(), new ObservableCollection<CoinTable>(coinTables));
-                //Workers.RaiseProperychanging("WorkerList");
+                var worker = new Worker("NEW WORKER", "", new ObservableCollection<string>(), new ObservableCollection<CoinTable>(coinTables));
                 Workers.WorkerListAdd(worker);
-                //Workers.RaiseProperychanged("WorkerList");
             }
+        }
+
+        private void UpdateCoinsCommand(object obj)
+        {
+            var window = new SelectWorkers();
+            var vm = new SelectWorkersVM(showNotes: true);
+            vm.Title = "Update Coins In Workers";
+            vm.ButtonTitle = "Update";
+            var workersCopy = new ObservableCollection<Worker>();
+            bool[] queries = SaveQueries();
+            vm.Workers = Workers.WorkerList;
+            window.DataContext = vm;
+            var dialogResult = window.ShowDialog();
+            RestoreQueries(queries);
         }
     }
 }

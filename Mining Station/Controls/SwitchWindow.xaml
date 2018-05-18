@@ -357,8 +357,8 @@
                     </Style>
                 </RichTextBox.Resources>
                 <i:Interaction.Behaviors>
-                    <local:RichTextBoxAddLineBehavior AddParagraph="{Binding NewParagraph}" />
-                    <local:RichTextBoxAddLineBehavior AddRun="{Binding NewRun}" />
+                    <local:RichTextBoxAddLineBehavior AddParagraph="{Binding NewParagraph}"
+                                                      AddRun="{Binding NewRun}" />
                 </i:Interaction.Behaviors>
             </RichTextBox>
         </ScrollViewer>

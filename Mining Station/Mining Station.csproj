@@ -133,6 +133,7 @@
     <Compile Include="Behaviors\SelectFileBehavior.cs" />
     <Compile Include="Behaviors\ShowColumnsMenuBehavior.cs" />
     <Compile Include="Behaviors\TextBlockBindableInlinesBehavior.cs" />
+    <Compile Include="Behaviors\WindowCloser.cs" />
     <Compile Include="Controls\AddComputers.xaml.cs">
       <DependentUpon>AddComputers.xaml</DependentUpon>
     </Compile>
@@ -154,9 +155,6 @@
       <DependentUpon>EditableCell.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\ExportImportWorkers.xaml.cs">
-      <DependentUpon>ExportImportWorkers.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Controls\HashrateMultiplier.xaml.cs">
       <DependentUpon>HashrateMultiplier.xaml</DependentUpon>
     </Compile>
@@ -173,6 +171,9 @@
     </Compile>
     <Compile Include="Controls\Report.xaml.cs">
       <DependentUpon>Report.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SelectWorkers.xaml.cs">
+      <DependentUpon>SelectWorkers.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\SwitchWindow.xaml.cs">
       <DependentUpon>SwitchWindow.xaml</DependentUpon>
@@ -285,10 +286,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\ExportImportWorkers.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\HashrateMultiplier.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -308,6 +305,10 @@
     <Page Include="Controls\Report.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\SelectWorkers.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\SwitchWindow.xaml">
       <SubType>Designer</SubType>

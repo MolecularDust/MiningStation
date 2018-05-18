@@ -186,6 +186,7 @@ namespace Mining_Station
         public RelayCommandLight MassUpdateWorkers { get; private set; }
         public RelayCommandLight MassUpdateWtmSettings { get; private set; }
         public RelayCommandLight AddCoinsByAlgorithm { get; private set; }
+        public RelayCommandLight UpdateCoins { get; private set; }
         public RelayCommandLight AddComputers { get; private set; }
         public RelayCommandLight CancelWaiting { get; private set; }
         public RelayCommandLight EditPath { get; private set; }
@@ -296,6 +297,7 @@ namespace Mining_Station
             MassUpdateWorkers = new RelayCommandLight(MassUpdateWorkersCommand);
             MassUpdateWtmSettings = new RelayCommandLight(MassUpdateWtmSettingsCommand);
             AddCoinsByAlgorithm = new RelayCommandLight(AddCoinsByAlgorithmCommand);
+            UpdateCoins = new RelayCommandLight(UpdateCoinsCommand);
             AddComputers = new RelayCommandLight(AddComputersCommand);
             CancelWaiting = new RelayCommandLight(CancelWaitingCommand);
             EditPath = new RelayCommandLight(EditPathCommand);

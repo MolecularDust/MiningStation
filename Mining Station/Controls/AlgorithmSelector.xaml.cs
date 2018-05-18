@@ -100,6 +100,29 @@ namespace Mining_Station
             set { _show = value; OnPropertyChanged("Show"); }
         }
 
+        private double _hashrate;
+        public double Hashrate
+        {
+            get { return _hashrate; }
+            set { _hashrate = value; OnPropertyChanged("Hashrate"); }
+        }
+
+        private double _power;
+        public double Power
+        {
+            get { return _power; }
+            set { _power = value; OnPropertyChanged("Power"); }
+        }
+
+        private double _fees;
+        public double Fees
+        {
+            get { return _fees; }
+            set { _fees = value; OnPropertyChanged("Fees"); }
+        }
+
+
+
         public ObservableCollection<CoinId> Coins { get; set; }
 
         public void AddCoinsCollectionChanged()
@@ -131,6 +154,102 @@ namespace Mining_Station
                 else this.IsChecked = false;
                 IsCheckedBypass = false;
             }
+        }
+
+        public static async Task<ObservableCollection<Algorithm>> GetWtmData(CancellationToken token = default(CancellationToken))
+        {
+            var allCoins = await WhatToMine.GetAllCoinsJson(token);
+            if (allCoins == null)
+                return null;
+            var sortedByAlgo = new ObservableCollection<Algorithm>();
+            foreach (var coin in allCoins)
+            {
+                var algoName = (string)((Dictionary<string, object>)coin.Value)["algorithm"];
+                var newCoin = new CoinId
+                {
+                    Id = (int)((Dictionary<string, object>)coin.Value)["id"],
+                    Name = coin.Key,
+                    Symbol = (string)((Dictionary<string, object>)coin.Value)["tag"],
+                    Status = (string)((Dictionary<string, object>)coin.Value)["status"],
+                };
+                newCoin.Show = string.Equals(newCoin.Status, "Active", StringComparison.InvariantCultureIgnoreCase) ? true : false;
+                var algo = sortedByAlgo.FirstOrDefault(x => x.Name == algoName);
+                if (algo != null)
+                {
+                    var algoCoin = algo.Coins.FirstOrDefault(x => x.Name == coin.Key);
+                    if (algoCoin == null)
+                    {
+                        algo.Coins.Add(newCoin);
+                    }
+                }
+                else
+                {
+                    var newAlgo = new Algorithm
+                    {
+                        Name = algoName,
+                        Coins = new ObservableCollection<CoinId>()
+                    };
+                    newAlgo.AddCoinsCollectionChanged();
+                    newAlgo.Coins.Add(newCoin);
+                    sortedByAlgo.Add(newAlgo);
+                }
+            }
+            sortedByAlgo = new ObservableCollection<Algorithm>(sortedByAlgo.OrderBy(x => x.Name));
+            return sortedByAlgo;
+        }
+
+        public static ObservableCollection<Algorithm> GetWorkersAlgorithms(Worker worker)
+        {
+            var algos = new ObservableCollection<Algorithm>();
+            foreach (var ct in worker.CoinList)
+            {
+                foreach (var coin in ct.Coins)
+                {
+                    var algo = algos.FirstOrDefault(x => x.Name == coin.Algorithm);
+                    if (algo != null)
+                    {
+                        if (ct.Power > algo.Power)
+                            algo.Power = ct.Power;
+                        if (ct.Fees > algo.Fees)
+                            algo.Fees = ct.Fees;
+
+                        var coinFound = algo.Coins.FirstOrDefault(x => x.Name == coin.Name);
+                        if (coinFound != null)
+                        {
+                            if (coin.Hashrate > algo.Hashrate)
+                                algo.Hashrate = coin.Hashrate;
+                        }
+                        else
+                        {
+                            var newCoinId = new CoinId()
+                            {
+                                Name = coin.Name,
+                                Symbol = coin.Symbol
+                            };
+                            algo.Coins.Add(newCoinId);
+                        }
+                    }
+                    else
+                    {
+                        var newCoinId = new CoinId()
+                        {
+                            Name = coin.Name,
+                            Symbol = coin.Symbol
+                        };
+                        var newAlgo = new Algorithm()
+                        {
+                            Name = coin.Algorithm,
+                            Coins = new ObservableCollection<CoinId>(),
+                            Hashrate = coin.Hashrate,
+                            Power = ct.Power,
+                            Fees = ct.Fees
+                        };
+                        newAlgo.Coins.Add(newCoinId);
+                        algos.Add(newAlgo);
+                    }
+                }
+            }
+            return algos;
         }
     }
 
@@ -262,48 +381,6 @@ namespace Mining_Station
 
         }
 
-        public async Task<ObservableCollection<Algorithm>> GetWtmData(CancellationToken token = default(CancellationToken))
-        {
-            var allCoins = await WhatToMine.GetAllCoinsJson(token);
-            if (allCoins == null)
-                return null;
-            var sortedByAlgo = new ObservableCollection<Algorithm>();
-            foreach (var coin in allCoins)
-            {
-                var algoName = (string)((Dictionary<string, object>)coin.Value)["algorithm"];
-                var newCoin = new CoinId
-                {
-                    Id = (int)((Dictionary<string, object>)coin.Value)["id"],
-                    Name = coin.Key,
-                    Symbol = (string)((Dictionary<string, object>)coin.Value)["tag"],
-                    Status = (string)((Dictionary<string, object>)coin.Value)["status"],
-                };
-                newCoin.Show = string.Equals(newCoin.Status, "Active", StringComparison.InvariantCultureIgnoreCase) ? true : false;
-                var algo = sortedByAlgo.FirstOrDefault(x => x.Name == algoName);
-                if (algo != null)
-                {
-                    var algoCoin = algo.Coins.FirstOrDefault(x => x.Name == coin.Key);
-                    if (algoCoin == null)
-                    {
-                        algo.Coins.Add(newCoin);
-                    }
-                }
-                else
-                {
-                    var newAlgo = new Algorithm
-                    {
-                        Name = algoName,
-                        Coins = new ObservableCollection<CoinId>()
-                    };
-                    newAlgo.AddCoinsCollectionChanged();
-                    newAlgo.Coins.Add(newCoin);
-                    sortedByAlgo.Add(newAlgo);
-                }
-            }
-            sortedByAlgo = new ObservableCollection<Algorithm>(sortedByAlgo.OrderBy(x => x.Name));
-            return sortedByAlgo;
-        }
-
         public void ShowActiveCoins(bool showActiveCoinsOnly)
         {
             foreach (var algo in Algorithms)
@@ -367,7 +444,7 @@ namespace Mining_Station
             vm.IsInitializing = true;
             vm.CancelSource = new CancellationTokenSource();
             var token = vm.CancelSource.Token;
-            vm.Algorithms = await vm.GetWtmData(token);
+            vm.Algorithms = await Algorithm.GetWtmData(token);
             vm.ShowActiveAlgos(true);
             vm.IsInitializing = false;
         }

@@ -103,7 +103,7 @@ namespace Mining_Station
             set { _newRun = value; OnPropertyChanged("NewRun"); }
         }
 
-        public MassUpdateVM() {}
+        public MassUpdateVM() { }
 
         public MassUpdateVM(ObservableCollection<Computer> computers)
         {
@@ -206,7 +206,7 @@ namespace Mining_Station
             pc.UpdateSuccessfull = new TaskCompletionSource<bool>();
 
             var address = ViewModel.BuildServerAddress(pc.Name, Constants.StreamServer);
-            var channel = Service.NewStreamChannel(address, TimeSpan.FromSeconds(60*10));
+            var channel = Service.NewStreamChannel(address, TimeSpan.FromSeconds(60 * 10));
             FileStream outputStream = null;
             try
             {
@@ -272,8 +272,8 @@ namespace Mining_Station
 
             try
             {
-               
-                var response = await channel.UpdateWorkers(new StreamUploadRequest { Stream = stream}).WithCancellation(token).ConfigureAwait(false);
+
+                var response = await channel.UpdateWorkers(new StreamUploadRequest { Stream = stream }).WithCancellation(token).ConfigureAwait(false);
                 if (response.ResponseFlag)
                 {
                     pc.SwitchStatus = Computer.OperationStatus.Success;

@@ -208,12 +208,8 @@ namespace Mining_Station
             SaveUndoIsEnabled = true;
         }
 
-        private async void ExportWorkersCommand(object parameter)
+        public bool[] SaveQueries()
         {
-            var window = new ExportImportWorkers();
-            var vm = new ExportImportWorkersVM();
-            vm.Workers = Workers.WorkerList;
-
             //Store current Query data and reset Query checkmarks
             bool[] queries = new bool[Workers.WorkerList.Count];
             for (int i = 0; i < Workers.WorkerList.Count; i++)
@@ -221,25 +217,37 @@ namespace Mining_Station
                 queries[i] = Workers.WorkerList[i].Query;
                 Workers.WorkerList[i].Query = false;
             }
+            return queries;
+        }
 
-            Action restoreQueries = () => {
-                for (int i = 0; i < queries.Length; i++)
-                    Workers.WorkerList[i].Query = queries[i];
-            };
+        public void RestoreQueries(bool[] queries)
+        {
+            for (int i = 0; i < queries.Length; i++)
+                Workers.WorkerList[i].Query = queries[i];
+        }
+
+        private async void ExportWorkersCommand(object parameter)
+        {
+            var window = new SelectWorkers();
+            var vm = new SelectWorkersVM();
+            vm.Workers = Workers.WorkerList;
+
+            bool[] queries = SaveQueries();
 
             window.DataContext = vm;
-            vm.Title = "Export";
+            vm.Title = "Export Workers";
+            vm.ButtonTitle = "Export";
             var dialogResult = window.ShowDialog();
             if (dialogResult == false)
             {
-                restoreQueries();
+                RestoreQueries(queries);
                 return;
             }
 
             var workersToSave = Workers.WorkerList.Where(x => x.Query).ToList();
             if (workersToSave == null || workersToSave.Count == 0)
             {
-                restoreQueries();
+                RestoreQueries(queries);
                 return;
             }
 
@@ -249,7 +257,7 @@ namespace Mining_Station
             var saveDialogResult = saveFileDialog.ShowDialog();
             if (saveDialogResult == false)
             {
-                restoreQueries();
+                RestoreQueries(queries);
                 return;
             }
 
@@ -258,12 +266,12 @@ namespace Mining_Station
             {
                 await Task.Delay(100);
                 MessageBox.Show("Failed to convert selected workers to JSON format", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                restoreQueries();
+                RestoreQueries(queries);
                 return;
             }
             string jsonFormatted = JsonConverter.FormatJson(json);
             Helpers.WriteToTxtFile(saveFileDialog.FileName, jsonFormatted);
-            restoreQueries();
+            RestoreQueries(queries);
         }
 
         private async void ImportWorkersCommand(object parameter)
@@ -291,13 +299,14 @@ namespace Mining_Station
                 return;
             }
 
-            var window = new ExportImportWorkers();
-            var vm = new ExportImportWorkersVM();
+            var window = new SelectWorkers();
+            var vm = new SelectWorkersVM();
             vm.Workers = convertedWorkers;
             foreach (var worker in vm.Workers)
                 worker.Query = true;
             window.DataContext = vm;
-            vm.Title = "Import";
+            vm.Title = "Import Workers";
+            vm.ButtonTitle = "Import";
             var dialogResult = window.ShowDialog();
             if (dialogResult == false)
             {
