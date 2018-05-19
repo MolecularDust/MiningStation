@@ -149,7 +149,7 @@ namespace Mining_Station
 
         private void ClosingCommand(object obj)
         {
-            CancelSource.Cancel();
+            CancelSource?.Cancel();
         }
 
         private async Task UpdateCoins(CancellationToken token)
