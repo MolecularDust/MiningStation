@@ -229,6 +229,7 @@ namespace Mining_Station
         private async void ExportWorkersCommand(object parameter)
         {
             var window = new SelectWorkers();
+            window.SizeToContent = SizeToContent.WidthAndHeight;
             var vm = new SelectWorkersVM();
             vm.Workers = Workers.WorkerList;
 
@@ -300,6 +301,7 @@ namespace Mining_Station
             }
 
             var window = new SelectWorkers();
+            window.SizeToContent = SizeToContent.WidthAndHeight;
             var vm = new SelectWorkersVM();
             vm.Workers = convertedWorkers;
             foreach (var worker in vm.Workers)

@@ -173,7 +173,7 @@ namespace Mining_Station
                         ViewModel.Instance.SaveUndoRedo(History.UndoOperationType.WorkersAll.ToString());
                         changeDetected = true;
                     }
-                        
+
                     foreach (var coinId in difference)
                     {
                         worker.CoinList.Add(new CoinTable(
@@ -195,7 +195,7 @@ namespace Mining_Station
                             initNotes: Notes
                             ));
 
-                        if (reportDict.ContainsKey(worker.Name)) 
+                        if (reportDict.ContainsKey(worker.Name))
                             reportDict[worker.Name].Add(coinId.Name);
                         else
                             reportDict.Add(worker.Name, new List<string> { coinId.Name });

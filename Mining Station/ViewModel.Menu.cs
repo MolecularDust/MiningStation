@@ -92,6 +92,7 @@ namespace Mining_Station
         private void UpdateCoinsCommand(object obj)
         {
             var window = new SelectWorkers();
+            window.Width = 400; window.Height = 300;
             var vm = new SelectWorkersVM(showNotes: true);
             vm.Title = "Update Coins In Workers";
             vm.ButtonTitle = "Update";
