@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -47,6 +48,8 @@ namespace Mining_Station
         public string Title { get; set; }
         public ObservableCollection<Worker> Workers { get; set; }
         public RelayCommand Ok { get; private set; }
+        public RelayCommand Closing { get; private set; }
+        public CancellationTokenSource CancelSource { get; set; }
 
         private string _buttonTitle;
         public string ButtonTitle
@@ -110,6 +113,8 @@ namespace Mining_Station
         public SelectWorkersVM(bool showNotes = false)
         {
             Ok = new RelayCommand(OkCommand, Ok_CanExecute);
+            Closing = new RelayCommand(ClosingCommand);
+
             Template = Templates.Select.ToString();
             ShowNotes = showNotes;
         }
@@ -124,10 +129,12 @@ namespace Mining_Station
         {
             if (ButtonTitle == "Update" && !updateFinished)
             {
+                CancelSource = new CancellationTokenSource();
+                var token = CancelSource.Token;
                 WaitMessage = "Accessing whattomine.com...";
                 Template = Templates.Wait.ToString();
                 paragraph = new Paragraph();
-                await UpdateCoins();
+                await UpdateCoins(token);
                 updateFinished = true;
                 Template = Templates.Report.ToString();
                 await Task.Delay(100);
@@ -140,9 +147,14 @@ namespace Mining_Station
             }
         }
 
-        private async Task UpdateCoins()
+        private void ClosingCommand(object obj)
         {
-            var allWtmAlgos = await Algorithm.GetWtmData();
+            CancelSource.Cancel();
+        }
+
+        private async Task UpdateCoins(CancellationToken token)
+        {
+            var allWtmAlgos = await Algorithm.GetWtmData(token);
             if (allWtmAlgos == null)
             {
                 paragraph.Inlines.Add(new Run("ERROR:").FontWeight(FontWeights.Bold).Color(Colors.Salmon));

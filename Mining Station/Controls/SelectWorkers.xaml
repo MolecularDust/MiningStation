@@ -11,6 +11,11 @@
     local:WindowCloser.CloseDialog="{Binding CloseDialog}"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <i:InvokeCommandAction Command="{Binding Closing}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" UseLayoutRounding="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
