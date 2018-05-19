@@ -56,7 +56,7 @@ namespace Mining_Station
                 {
                     try
                     {
-                        WtmSettings.ProxyPassword = WtmSettings.ProxyPasswordEncrypted.DecryptSecure();
+                        BypassUndo(() => WtmSettings.ProxyPassword = WtmSettings.ProxyPasswordEncrypted.DecryptSecure());
                     }
                     catch (Exception)
                     {
