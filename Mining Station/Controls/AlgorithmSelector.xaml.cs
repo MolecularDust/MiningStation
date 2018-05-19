@@ -270,6 +270,7 @@ namespace Mining_Station
         public RelayCommand CoinsSelectNone { get; private set; }
         public RelayCommand AlgorithmsSelectAll { get; private set; }
         public RelayCommand AlgorithmsSelectNone { get; private set; }
+        public RelayCommand Initialize { get; private set; }
 
         public enum WorkerOptions { AddToExisting, AddToNew }
 
@@ -327,9 +328,20 @@ namespace Mining_Station
             CoinsSelectNone = new RelayCommand(CoinsSelectNoneCommand);
             AlgorithmsSelectAll = new RelayCommand(AlgorithmsSelectAllCommand);
             AlgorithmsSelectNone = new RelayCommand(AlgorithmsSelectNoneCommand);
+            Initialize = new RelayCommand(InitializeCommand);
 
             ShowActiveCoinsOnly = true;
             this.PropertyChanged += AlgorithmSelectorVM_PropertyChanged;
+        }
+
+        private async void InitializeCommand(object obj)
+        {
+            IsInitializing = true;
+            CancelSource = new CancellationTokenSource();
+            var token = CancelSource.Token;
+            Algorithms = await Algorithm.GetWtmData(token);
+            ShowActiveAlgos(true);
+            IsInitializing = false;
         }
 
         private void AlgorithmSelectorVM_PropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -433,20 +445,6 @@ namespace Mining_Station
         private void ButtonOk_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
-        }
-
-        private async void Window_ContentRendered(object sender, EventArgs e)
-        {
-            var window = sender as Window;
-            var vm = window.DataContext as AlgorithmSelectorVM;
-            if (vm == null)
-                return;
-            vm.IsInitializing = true;
-            vm.CancelSource = new CancellationTokenSource();
-            var token = vm.CancelSource.Token;
-            vm.Algorithms = await Algorithm.GetWtmData(token);
-            vm.ShowActiveAlgos(true);
-            vm.IsInitializing = false;
         }
 
         private void CheckBox_Click(object sender, RoutedEventArgs e)

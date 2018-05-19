@@ -9,11 +9,15 @@
     x:Name="AlgorithmsWindow"
     Title="Algorithms"
     Height="410"
-    ContentRendered="Window_ContentRendered"
     Closed="AlgorithmsWindow_Closed"
     WindowStartupLocation="CenterOwner"
     SizeToContent="Width"
     mc:Ignorable="d">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="ContentRendered">
+            <i:InvokeCommandAction Command="{Binding Initialize}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Window.Resources>
         <local:OptionConverter x:Key="OptionConverter" />
         <Style x:Key="HideItem" TargetType="ListBoxItem">
@@ -115,6 +119,11 @@
                                     <MenuItem Command="{Binding AlgorithmsSelectNone}" Header="Select None" />
                                 </ContextMenu>
                             </ListBox.ContextMenu>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="1"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
