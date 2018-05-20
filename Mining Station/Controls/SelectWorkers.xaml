@@ -51,9 +51,9 @@
                 <DataTemplate x:Key="SelectTemplate">
                     <ListBox BorderThickness="0" ItemsSource="{Binding Workers}">
                         <ListBox.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Click="SelectAll_Click" Header="Select All" />
-                                <MenuItem Click="SelectNone_Click" Header="Select None" />
+                            <ContextMenu DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                                <MenuItem Command="{Binding SelectAll}" Header="Select All" />
+                                <MenuItem Command="{Binding SelectNone}" Header="Select None" />
                             </ContextMenu>
                         </ListBox.ContextMenu>
                         <ListBox.ItemTemplate>

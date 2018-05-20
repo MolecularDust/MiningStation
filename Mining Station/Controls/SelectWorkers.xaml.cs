@@ -24,23 +24,6 @@ namespace Mining_Station
             InitializeComponent();
             this.Owner = Application.Current.MainWindow;
         }
-
-        private void SelectAll_Click(object sender, RoutedEventArgs e)
-        {
-            SelectAllNone(true);
-        }
-
-        private void SelectNone_Click(object sender, RoutedEventArgs e)
-        {
-            SelectAllNone(false);
-        }
-
-        private void SelectAllNone(bool query)
-        {
-            var vm = this.DataContext as SelectWorkersVM;
-            foreach (var worker in vm.Workers)
-                worker.Query = query;
-        }
     }
 
     public class SelectWorkersVM : NotifyObject
@@ -49,6 +32,8 @@ namespace Mining_Station
         public ObservableCollection<Worker> Workers { get; set; }
         public RelayCommand Ok { get; private set; }
         public RelayCommand Closing { get; private set; }
+        public RelayCommand SelectAll { get; private set; }
+        public RelayCommand SelectNone { get; private set; }
         public CancellationTokenSource CancelSource { get; set; }
 
         private string _buttonTitle;
@@ -114,6 +99,8 @@ namespace Mining_Station
         {
             Ok = new RelayCommand(OkCommand, Ok_CanExecute);
             Closing = new RelayCommand(ClosingCommand);
+            SelectAll = new RelayCommand(SelectAllCommand);
+            SelectNone = new RelayCommand(SelectNoneCommand);
 
             Template = Templates.Select.ToString();
             ShowNotes = showNotes;
@@ -150,6 +137,18 @@ namespace Mining_Station
         private void ClosingCommand(object obj)
         {
             CancelSource?.Cancel();
+        }
+
+        private void SelectAllCommand(object obj)
+        {
+            foreach (var worker in Workers)
+                worker.Query = true;
+        }
+
+        private void SelectNoneCommand(object obj)
+        {
+            foreach (var worker in Workers)
+                worker.Query = false;
         }
 
         private async Task UpdateCoins(CancellationToken token)
