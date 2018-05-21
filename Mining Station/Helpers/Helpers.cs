@@ -126,6 +126,26 @@ namespace Mining_Station
             return null;
         }
 
+        public static DependencyObject FindAncestorByTag(DependencyObject obj, Type type, int maxMatchLevels, string name, List<Type> noGoTypes)
+        {
+            int currentLevel = 0;
+            while (obj != null)
+            {
+                var currentType = obj.GetType();
+                if (noGoTypes.Contains(currentType))
+                    return null;
+                if (currentType == type && ((Control)obj).Tag.ToString() == name)
+                {
+                    currentLevel++;
+                    if (currentLevel <= maxMatchLevels)
+                        return obj;
+                    else return null;
+                }
+                obj = VisualTreeHelper.GetParent(obj);
+            };
+            return null;
+        }
+
         public static DependencyObject FindAncestorByDataContext(DependencyObject obj, Type type, int maxMatchLevels, Type dataContextType, List<Type> noGoTypes)
         {
             int currentLevel = 0;

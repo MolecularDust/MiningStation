@@ -68,8 +68,9 @@ namespace Mining_Station
         private int sourceIndex;
         private CoinTable sourceItem;
         Point StartPoint;
-        List<Type> noGoCallerTypes1 = new List<Type>() { typeof(ComboBox), typeof(Button), typeof(CheckBox), typeof(TextBox)};
+        List<Type> noGoCallerTypes1 = new List<Type>() { typeof(ComboBox), typeof(Button), typeof(CheckBox), typeof(TextBox) };
         List<Type> noGoCallerTypes2 = new List<Type>() { typeof(ComboBox) };
+        const string rowName = "CoinTableRow";
 
         private ToolTip floatingTip = new ToolTip { HasDropShadow = false, Placement = PlacementMode.Relative };
 
@@ -80,7 +81,7 @@ namespace Mining_Station
 
         private void AssociatedObject_Drop(object sender, DragEventArgs e)
         {
-            var currentRow = FindRow(e.OriginalSource, typeof(CoinTable), noGoCallerTypes2);
+            var currentRow = FindRow(e.OriginalSource, rowName, noGoCallerTypes2);
             if (currentRow == null)
                 return;
             var currentRowIndex = currentRow.GetIndex();
@@ -116,9 +117,9 @@ namespace Mining_Station
             if (row.DataContext is Coin)
             {
                 SourceRowCoin = row;
-                sourceRow = FindRow(row, typeof(CoinTable), noGoCallerTypes1);
+                sourceRow = FindRow(row, rowName, noGoCallerTypes1);
             }
-            else sourceRow = row;    
+            else sourceRow = row;
             if (sourceRow == null)
                 return;
             isEditing = sourceRow.IsEditing;
@@ -163,7 +164,7 @@ namespace Mining_Station
         {
             isDragging = true;
             UpdateFloatingTipPosition(e.GetPosition((UIElement)sender));
-            var currentRow = FindRow(e.OriginalSource, typeof(CoinTable), noGoCallerTypes1);
+            var currentRow = FindRow(e.OriginalSource, rowName, noGoCallerTypes1);
             if (currentRow != null)
                 ((DataGrid)sender).SelectedItem = currentRow.Item;
             if (e.KeyStates == DragDropKeyStates.LeftMouseButton)
@@ -202,12 +203,12 @@ namespace Mining_Station
         }
 
         // Search ancestor tree for DataGridRow that has DataContext of CoinTable. Adandon search if parent is Button or ComboBox  
-        private DataGridRow FindRow(object source, Type dataContextType, List<Type> exclusions)
+        private DataGridRow FindRow(object source, string name, List<Type> exclusions)
         {
             var dObject = source as DependencyObject;
             if (dObject == null)
                 return null;
-            var row = (DataGridRow)Helpers.FindAncestorByDataContext(dObject, typeof(DataGridRow), 2, dataContextType, exclusions);
+            var row = (DataGridRow)Helpers.FindAncestorByTag(dObject, typeof(DataGridRow), 2, name, exclusions);
             if (row != null)
                 return row;
             else return null;

@@ -290,6 +290,7 @@
                                         <SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
                                         <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
                                     </Style.Resources>
+                                    <Setter Property="Tag" Value="CoinTableRow"/>
                                     <Setter Property="Background" Value="{StaticResource MultiCell}" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Coins.Count}" Value="1">
