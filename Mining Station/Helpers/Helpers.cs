@@ -134,7 +134,7 @@ namespace Mining_Station
                 var currentType = obj.GetType();
                 if (noGoTypes.Contains(currentType))
                     return null;
-                if (currentType == type && ((Control)obj).Tag.ToString() == name)
+                if (currentType == type && ((Control)obj).Tag?.ToString() == name)
                 {
                     currentLevel++;
                     if (currentLevel <= maxMatchLevels)
