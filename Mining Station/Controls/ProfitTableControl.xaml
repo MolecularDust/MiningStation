@@ -150,7 +150,7 @@
                                             </Style>
                                         </DataGrid.RowStyle>
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn ElementStyle="{StaticResource ColumnElementStyle}" Header="Coin">
+                                            <DataGridTextColumn ElementStyle="{StaticResource ColumnElementStyle}" Header="Coin" SortMemberPath="Name">
                                                 <DataGridTextColumn.CellStyle>
                                                     <Style BasedOn="{StaticResource ThinCell_0110}" TargetType="DataGridCell">
                                                         <Style.Triggers>
