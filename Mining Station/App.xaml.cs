@@ -54,13 +54,13 @@ namespace Mining_Station
 
             if (!createdNew)
             {
-                ShowToFront(Constants.AppName);
+                ShowToFront($"{Constants.AppName} : {Environment.MachineName}");
                 Application.Current.Shutdown();
                 return;
             }
 
             // Set local culture for the entire app
-            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), 
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement),
                 new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Set app's current directory
