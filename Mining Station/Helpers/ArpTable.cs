@@ -191,6 +191,7 @@ namespace Mining_Station
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
+            hostNames.Add(Environment.MachineName);
             hostNames = hostNames.Distinct().ToList();
             hostNames.Sort();
             return hostNames;
