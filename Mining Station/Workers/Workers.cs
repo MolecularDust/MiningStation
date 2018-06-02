@@ -212,6 +212,7 @@ namespace Mining_Station
             _new.PowerCost = this.PowerCost;
             _new.CoinType = this.CoinType;
             _new.DisplayCoinAs = this.DisplayCoinAs;
+            _new.NetworkScanMethod = this.NetworkScanMethod;
             return _new;
         }
 
@@ -226,6 +227,7 @@ namespace Mining_Station
             _new.PowerCost = this.PowerCost;
             _new.CoinType = this.CoinType;
             _new.DisplayCoinAs = this.DisplayCoinAs;
+            _new.NetworkScanMethod = this.NetworkScanMethod;
             return _new;
         }
 
