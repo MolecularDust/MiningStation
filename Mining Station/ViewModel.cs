@@ -665,10 +665,6 @@ namespace Mining_Station
                         }
                     });
 
-                    // This line blocks UI when a disconnected machine is to be polled over WiFi.
-                    // That is why the entire block is wrapped into Task.Run().
-                    //Task task = function();
-
                     taskList.Add(task);
                 }
             }
