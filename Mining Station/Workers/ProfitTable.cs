@@ -26,7 +26,7 @@ namespace Mining_Station
             get { return _computers; }
             set { _computers = value; }
         }
-      
+
         public List<string> ComputerNames { get { return this.Computers.Select(x => x.Name).ToList(); } }
 
         [ScriptIgnore]
@@ -60,6 +60,11 @@ namespace Mining_Station
                     computer.NewCoinName = row.Name;
                     computer.NewCoinSymbol = row.Symbol;
                     computer.RaiseProperychanged("NewCoinNameAndSymbol");
+                }
+                foreach (var item in this.ProfitList) // Reverse state of all switch buttons other than the one clicked
+                {
+                    if (item != row && item.ManualSwitch)
+                        item.ManualSwitch = false;
                 }
             }
         }

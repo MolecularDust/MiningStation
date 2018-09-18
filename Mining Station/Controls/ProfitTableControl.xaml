@@ -183,7 +183,6 @@
                                                         <RadioButton
                                                             HorizontalAlignment="Center"
                                                             VerticalAlignment="Center"
-                                                            GroupName="{Binding ElementName=DataGridProfit, Path=DataContext.Index}"
                                                             IsChecked="{Binding ManualSwitch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
